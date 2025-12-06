@@ -1,0 +1,43 @@
+{
+  "name": "co8-plugins",
+  "displayName": "CO8 Claude Code Plugins",
+  "description": "Curated collection of Claude Code plugins for enhanced productivity and workflow automation",
+  "author": {
+    "name": "Enrique R Grullon",
+    "email": "e@co8.com",
+    "url": "https://co8.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/co8/claude-code-plugins"
+  },
+  "homepage": "https://github.com/co8/claude-code-plugins",
+  "license": "MIT",
+  "categories": [
+    "productivity",
+    "automation",
+    "notifications",
+    "remote-control"
+  ],
+  "plugins": [
+    {
+      "name": "telegram-plugin",
+      "path": "plugins/telegram-plugin",
+      "version": "0.1.0",
+      "displayName": "Claude Code Telegram Bot",
+      "description": "Remote interaction with Claude Code via Telegram - receive task updates, approval requests, and control sessions from your phone",
+      "featured": true
+    }
+  ],
+  "maintainers": [
+    {
+      "name": "Enrique R Grullon",
+      "email": "e@co8.com",
+      "github": "co8"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/co8/claude-code-plugins/issues",
+    "documentation": "https://github.com/co8/claude-code-plugins#readme"
+  }
+}
