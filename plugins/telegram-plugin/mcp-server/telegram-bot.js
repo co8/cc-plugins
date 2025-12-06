@@ -295,6 +295,12 @@ async function sendMessage(text, priority = 'normal', options = {}, retries = 3)
       });
 
       log('info', 'Message sent', { message_id: message.message_id, priority, attempt });
+
+      // Add robot icon to confirm receipt
+      await bot.sendMessage(config.chat_id, '🤖', {
+        reply_to_message_id: message.message_id
+      });
+
       return { success: true, message_id: message.message_id };
     } catch (error) {
       lastError = error;
@@ -443,6 +449,12 @@ async function pollResponse(approvalId, timeoutSeconds = 600) {
         try {
           // Acknowledge the callback
           await bot.answerCallbackQuery(callbackQuery.id);
+
+          // Send acknowledgement message to user
+          await bot.sendMessage(config.chat_id, `✅ Response received: *${escapeMarkdown(data.label)}*`, {
+            parse_mode: 'MarkdownV2',
+            reply_to_message_id: callbackQuery.message.message_id
+          });
 
           // Handle "Other" option - request text input
           if (data.idx === -1) {
