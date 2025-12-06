@@ -6,7 +6,7 @@ A curated collection of Claude Code plugins for enhanced productivity and workfl
 
 ## 📦 Available Plugins
 
-### [Telegram Plugin](./plugins/telegram-plugin) ![Version](https://img.shields.io/badge/version-0.1.7-blue)
+### [Telegram Plugin](./plugins/telegram-plugin) ![Version](https://img.shields.io/badge/version-0.1.8-blue)
 
 **Remote interaction with Claude Code via Telegram**
 

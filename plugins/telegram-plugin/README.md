@@ -1,6 +1,6 @@
 # Telegram Plugin for Claude Code
 
-![Version](https://img.shields.io/badge/version-0.1.7-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen) ![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-8B5CF6?logo=anthropic&logoColor=white) ![Claude Hooks](https://img.shields.io/badge/Claude_Hooks-Enabled-7C3AED?logo=anthropic&logoColor=white) ![Telegram Bot API](https://img.shields.io/badge/Telegram%20Bot%20API-7.0-26A5E4?logo=telegram) ![MCP](https://img.shields.io/badge/MCP-Server-purple) ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)
+![Version](https://img.shields.io/badge/version-0.1.8-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen) ![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-8B5CF6?logo=anthropic&logoColor=white) ![Claude Hooks](https://img.shields.io/badge/Claude_Hooks-Enabled-7C3AED?logo=anthropic&logoColor=white) ![Telegram Bot API](https://img.shields.io/badge/Telegram%20Bot%20API-7.0-26A5E4?logo=telegram) ![MCP](https://img.shields.io/badge/MCP-Server-purple) ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)
 
 Control and monitor Claude Code remotely via Telegram. Receive task updates, respond to approval requests, and stay connected to your development workflow from anywhere.
 
