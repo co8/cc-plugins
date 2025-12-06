@@ -1,10 +1,14 @@
 # Claude Code Plugins by co8
 
+![Plugins](https://img.shields.io/badge/plugins-1-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen)
+
 A curated collection of Claude Code plugins for enhanced productivity and workflow automation.
 
 ## 📦 Available Plugins
 
-### [Telegram Plugin](./plugins/telegram-plugin)
+### [Telegram Plugin](./plugins/telegram-plugin) ![Version](https://img.shields.io/badge/version-0.1.6-blue)
 
 **Remote interaction with Claude Code via Telegram**
 
@@ -12,16 +16,17 @@ Control and monitor Claude Code remotely via Telegram. Receive smart notificatio
 
 **Features:**
 
-- 📬 Smart Notifications
-- ✅ Remote Approvals via inline keyboards
-- 🔔 Keyword Detection for insights
-- ⚡ Intelligent message batching
-- 🎛️ Fully configurable settings
+- 🚀 Auto-Setup Detection - Automatic configuration prompts
+- 📬 Smart Notifications - Task updates and insights
+- ✅ Remote Approvals - Interactive inline keyboards
+- 🔔 Keyword Detection - Automatic insight detection
+- ⚡ Message Batching - Intelligent notification grouping
+- 🎛️ Fully Configurable - Customize all settings
 
 **Quick Start:**
 
 ```bash
-/telegram:configure
+/telegram-plugin:configure
 ```
 
 [View Documentation →](./plugins/telegram-plugin/README.md)
