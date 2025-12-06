@@ -2,6 +2,12 @@
 
 This document provides comprehensive testing procedures for the Telegram Plugin to ensure all features work correctly.
 
+**Related Documentation:**
+
+- [README.md](README.md) - Plugin overview, setup, and configuration
+- [BUGFIXES.md](BUGFIXES.md) - Known issues and technical fixes
+- [CHANGELOG.md](CHANGELOG.md) - Version history and release notes
+
 ## Prerequisites
 
 1. **Telegram Bot Setup:**
@@ -426,11 +432,11 @@ After any code changes, run this minimal regression test:
 ### Issue: Markdown Escaping
 - **Problem:** Some special characters may not render correctly
 - **Workaround:** Use plain text for complex formatting
-- **Fix:** Improved escapeMarkdown() function (2025-12-06)
+- **Fix:** Improved escapeMarkdown() function in v0.1.4 - see [BUGFIXES.md](BUGFIXES.md#v014---2025-12-06---regex-bug-in-escapemarkdown-function)
 
 ### Issue: MCP Server Disconnection
 - **Problem:** Server disconnects after inactivity
-- **Workaround:** Reconnect with `/mcp`
+- **Workaround:** Restart Claude Code session to reload MCP server
 - **Status:** Expected behavior - MCP servers restart as needed
 
 ---

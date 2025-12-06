@@ -1,9 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
+# Source config helper library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/lib/config-helper.sh"
+
 # Check dependencies
-if ! command -v jq >/dev/null 2>&1; then
-  echo '{"continue": true, "suppressOutput": true}'
+if ! check_jq; then
+  cat  # Consume stdin to prevent pipe errors
   exit 0
 fi
 
@@ -11,17 +15,15 @@ fi
 input=$(cat)
 
 # Load configuration
-CONFIG_FILE="$HOME/.claude/telegram.local.md"
-if [ ! -f "$CONFIG_FILE" ]; then
+CONFIG_FILE=$(get_config_path)
+if [ $? -ne 0 ]; then
   # Config not found, skip silently
   echo '{"continue": true, "suppressOutput": true}'
   exit 0
 fi
 
 # Extract notification settings
-# Note: yq not available - using grep fallback for YAML parsing
-# If yq is installed, use: todo_completions_enabled=$(yq eval '.notifications.todo_completions // false' "$CONFIG_FILE")
-todo_completions_enabled=$(grep -A 5 "notifications:" "$CONFIG_FILE" | grep "todo_completions:" | grep -o "true\|false" 2>/dev/null || echo "false")
+todo_completions_enabled=$(get_bool_config "$CONFIG_FILE" "todo_completions" "false")
 
 if [ "$todo_completions_enabled" != "true" ]; then
   # Notifications disabled

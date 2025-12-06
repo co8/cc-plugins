@@ -1,9 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
+# Source config helper library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/lib/config-helper.sh"
+
 # Check dependencies
-if ! command -v jq >/dev/null 2>&1; then
-  echo '{"continue": true, "suppressOutput": true}'
+if ! check_jq; then
+  cat  # Consume stdin to prevent pipe errors
   exit 0
 fi
 
@@ -11,16 +15,14 @@ fi
 input=$(cat)
 
 # Load configuration
-CONFIG_FILE="$HOME/.claude/telegram.local.md"
-if [ ! -f "$CONFIG_FILE" ]; then
+CONFIG_FILE=$(get_config_path)
+if [ $? -ne 0 ]; then
   echo '{"continue": true, "suppressOutput": true}'
   exit 0
 fi
 
 # Check if session events are enabled
-# Note: yq not available - using grep fallback for YAML parsing
-# If yq is installed, use: session_events=$(yq eval '.notifications.session_events // false' "$CONFIG_FILE")
-session_events=$(grep -A 5 "notifications:" "$CONFIG_FILE" | grep "session_events:" | grep -o "true\|false" 2>/dev/null || echo "false")
+session_events=$(get_bool_config "$CONFIG_FILE" "session_events" "false")
 
 if [ "$session_events" != "true" ]; then
   echo '{"continue": true, "suppressOutput": true}'

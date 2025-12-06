@@ -1,6 +1,16 @@
 # Telegram Plugin Bug Fixes
 
-## 2025-12-06 - Regex Bug in escapeMarkdown Function
+This document provides detailed technical explanations of bugs and their fixes.
+
+**Related Documentation:**
+
+- [CHANGELOG.md](CHANGELOG.md) - Version history and release notes
+- [TESTING.md](TESTING.md) - Testing procedures and regression tests
+- [README.md](README.md) - Plugin overview and setup
+
+---
+
+## v0.1.4 - 2025-12-06 - Regex Bug in escapeMarkdown Function
 
 ### Issue
 The `escapeMarkdown()` function in `mcp-server/telegram-bot.js` had an invalid regular expression that caused crashes when processing approval requests.
@@ -52,7 +62,7 @@ function escapeMarkdown(text) {
 ### Testing
 To test the fix:
 
-1. Reconnect MCP server: `/mcp`
+1. Restart Claude Code session to reload MCP server
 2. Send approval request:
    ```javascript
    mcp__plugin_telegram-plugin_telegram-bot__send_approval_request({

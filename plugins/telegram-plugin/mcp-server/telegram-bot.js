@@ -7,10 +7,11 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import TelegramBot from 'node-telegram-bot-api';
-import { readFileSync, existsSync, appendFileSync } from 'fs';
+import { readFileSync, existsSync, appendFileSync, statSync, renameSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { homedir } from 'os';
+import yaml from 'js-yaml';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -42,8 +43,48 @@ function getConfigPath() {
 
 const CONFIG_PATH = getConfigPath();
 const LOG_PATH = join(dirname(__dirname), 'telegram.log');
+const MAX_LOG_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_LOG_FILES = 3;
 
-// Load configuration from .local.md file
+// Configuration schema for validation
+const CONFIG_SCHEMA = {
+  bot_token: { type: 'string', required: true, minLength: 10 },
+  chat_id: { type: 'string', required: true, pattern: /^-?\d+$/ },
+  timeout_seconds: { type: 'number', min: 10, max: 3600, default: 600 },
+  logging_level: { type: 'string', enum: ['all', 'errors', 'none'], default: 'errors' },
+  batch_window_seconds: { type: 'number', min: 5, max: 300, default: 30 },
+  notifications: {
+    type: 'object',
+    properties: {
+      todo_completions: { type: 'boolean', default: true },
+      errors: { type: 'boolean', default: true },
+      session_events: { type: 'boolean', default: true },
+      smart_detection: { type: 'boolean', default: true }
+    }
+  },
+  smart_keywords: { type: 'array', default: ['suggest', 'recommend', 'discovered', 'insight', 'clarify', 'important', 'note', 'warning'] }
+};
+
+// Validate configuration value against schema
+function validateConfigValue(key, value, schema) {
+  if (schema.type === 'string') {
+    if (typeof value !== 'string') return `${key} must be a string`;
+    if (schema.minLength && value.length < schema.minLength) return `${key} must be at least ${schema.minLength} characters`;
+    if (schema.pattern && !schema.pattern.test(value)) return `${key} has invalid format`;
+    if (schema.enum && !schema.enum.includes(value)) return `${key} must be one of: ${schema.enum.join(', ')}`;
+  } else if (schema.type === 'number') {
+    if (typeof value !== 'number') return `${key} must be a number`;
+    if (schema.min !== undefined && value < schema.min) return `${key} must be at least ${schema.min}`;
+    if (schema.max !== undefined && value > schema.max) return `${key} must be at most ${schema.max}`;
+  } else if (schema.type === 'boolean') {
+    if (typeof value !== 'boolean') return `${key} must be a boolean`;
+  } else if (schema.type === 'array') {
+    if (!Array.isArray(value)) return `${key} must be an array`;
+  }
+  return null;
+}
+
+// Load configuration from .local.md file with validation
 function loadConfig() {
   if (!existsSync(CONFIG_PATH)) {
     throw new Error(`Configuration file not found: ${CONFIG_PATH}`);
@@ -56,38 +97,51 @@ function loadConfig() {
     throw new Error('No YAML frontmatter found in configuration file');
   }
 
-  // Simple YAML parsing for our use case
-  const yaml = yamlMatch[1];
+  // Parse YAML using js-yaml library for robust parsing
+  let parsedConfig;
+  try {
+    parsedConfig = yaml.load(yamlMatch[1]);
+  } catch (err) {
+    throw new Error(`Invalid YAML in configuration file: ${err.message}`);
+  }
+
+  // Apply defaults and validate
   const config = {
-    bot_token: '',
-    chat_id: '',
-    timeout_seconds: 600,
+    bot_token: parsedConfig.bot_token || '',
+    chat_id: parsedConfig.chat_id || '',
+    timeout_seconds: parsedConfig.timeout_seconds ?? CONFIG_SCHEMA.timeout_seconds.default,
+    logging_level: parsedConfig.logging_level || CONFIG_SCHEMA.logging_level.default,
+    batch_window_seconds: parsedConfig.batch_window_seconds ?? CONFIG_SCHEMA.batch_window_seconds.default,
     notifications: {
-      todo_completions: true,
-      errors: true,
-      session_events: true,
-      smart_detection: true
+      todo_completions: parsedConfig.notifications?.todo_completions ?? true,
+      errors: parsedConfig.notifications?.errors ?? true,
+      session_events: parsedConfig.notifications?.session_events ?? true,
+      smart_detection: parsedConfig.notifications?.smart_detection ?? true
     },
-    smart_keywords: ['suggest', 'recommend', 'discovered', 'insight', 'clarify', 'important', 'note', 'warning'],
-    logging_level: 'errors',
-    batch_window_seconds: 30
+    smart_keywords: parsedConfig.smart_keywords || CONFIG_SCHEMA.smart_keywords.default
   };
 
-  // Extract values
-  const tokenMatch = yaml.match(/bot_token:\s*"([^"]+)"/);
-  const chatMatch = yaml.match(/chat_id:\s*"([^"]+)"/);
-  const timeoutMatch = yaml.match(/timeout_seconds:\s*(\d+)/);
-  const loggingMatch = yaml.match(/logging_level:\s*"([^"]+)"/);
-  const batchMatch = yaml.match(/batch_window_seconds:\s*(\d+)/);
+  // Validate required fields
+  const errors = [];
 
-  if (tokenMatch) config.bot_token = tokenMatch[1];
-  if (chatMatch) config.chat_id = chatMatch[1];
-  if (timeoutMatch) config.timeout_seconds = parseInt(timeoutMatch[1]);
-  if (loggingMatch) config.logging_level = loggingMatch[1];
-  if (batchMatch) config.batch_window_seconds = parseInt(batchMatch[1]);
+  for (const [key, schema] of Object.entries(CONFIG_SCHEMA)) {
+    if (schema.type === 'object') continue; // Skip nested objects for now
 
-  if (!config.bot_token || !config.chat_id) {
-    throw new Error('bot_token and chat_id are required in configuration');
+    const value = config[key];
+
+    if (schema.required && (!value || value === '')) {
+      errors.push(`${key} is required`);
+      continue;
+    }
+
+    if (value !== undefined && value !== '') {
+      const error = validateConfigValue(key, value, schema);
+      if (error) errors.push(error);
+    }
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Configuration validation failed:\n  - ${errors.join('\n  - ')}`);
   }
 
   return config;
@@ -102,7 +156,36 @@ function escapeMarkdown(text) {
   return text.replace(/[_*\[\]()~`>#+=|{}.!-]/g, '\\$&');
 }
 
-// FIX #1: Logging utility - use cached config
+// Rotate log files when max size is reached
+function rotateLogFile() {
+  try {
+    if (!existsSync(LOG_PATH)) return;
+
+    const stats = statSync(LOG_PATH);
+    if (stats.size < MAX_LOG_SIZE) return;
+
+    // Rotate existing logs
+    for (let i = MAX_LOG_FILES - 1; i > 0; i--) {
+      const oldPath = `${LOG_PATH}.${i}`;
+      const newPath = `${LOG_PATH}.${i + 1}`;
+
+      if (existsSync(oldPath)) {
+        if (i === MAX_LOG_FILES - 1) {
+          unlinkSync(oldPath); // Delete oldest
+        } else {
+          renameSync(oldPath, newPath);
+        }
+      }
+    }
+
+    // Move current log to .1
+    renameSync(LOG_PATH, `${LOG_PATH}.1`);
+  } catch (err) {
+    console.error('Failed to rotate log:', err);
+  }
+}
+
+// FIX #1: Logging utility with rotation - use cached config
 function log(level, message, data = {}) {
   // Use cached config to avoid loading on every log call
   if (!config) return;
@@ -114,6 +197,7 @@ function log(level, message, data = {}) {
   const logEntry = `[${timestamp}] [${level.toUpperCase()}] ${message} ${JSON.stringify(data)}\n`;
 
   try {
+    rotateLogFile();
     appendFileSync(LOG_PATH, logEntry);
   } catch (err) {
     console.error('Failed to write log:', err);
@@ -198,22 +282,33 @@ function initBot() {
   log('info', 'Telegram bot initialized', { chat_id: config.chat_id, config_path: CONFIG_PATH });
 }
 
-// Send message to Telegram
-async function sendMessage(text, priority = 'normal', options = {}) {
+// Send message to Telegram with retry logic
+async function sendMessage(text, priority = 'normal', options = {}, retries = 3) {
   if (!bot) initBot();
 
-  try {
-    const message = await bot.sendMessage(config.chat_id, text, {
-      parse_mode: 'Markdown',
-      ...options
-    });
+  let lastError;
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const message = await bot.sendMessage(config.chat_id, text, {
+        parse_mode: 'MarkdownV2',
+        ...options
+      });
 
-    log('info', 'Message sent', { message_id: message.message_id, priority });
-    return { success: true, message_id: message.message_id };
-  } catch (error) {
-    log('error', 'Failed to send message', { error: error.message });
-    throw error;
+      log('info', 'Message sent', { message_id: message.message_id, priority, attempt });
+      return { success: true, message_id: message.message_id };
+    } catch (error) {
+      lastError = error;
+      log('error', `Failed to send message (attempt ${attempt}/${retries})`, { error: error.message });
+
+      if (attempt < retries) {
+        // Exponential backoff: 1s, 2s, 4s
+        const delay = Math.pow(2, attempt - 1) * 1000;
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
   }
+
+  throw lastError;
 }
 
 // Send approval request with inline keyboard
@@ -243,7 +338,7 @@ async function sendApprovalRequest(question, options, header) {
     const messageText = `🤔 *${escapedHeader}*\n\n${escapedQuestion}\n\n_Options:_\n${escapedOptions}`;
 
     const message = await bot.sendMessage(config.chat_id, messageText, {
-      parse_mode: 'Markdown',
+      parse_mode: 'MarkdownV2',
       reply_markup: {
         inline_keyboard: keyboard
       }
@@ -274,7 +369,7 @@ async function sendApprovalRequest(question, options, header) {
   }
 }
 
-// FIX #2: Poll for approval response with try-finally
+// FIX #2: Poll for approval response with improved cleanup
 async function pollResponse(approvalId, timeoutSeconds = 600) {
   if (!bot) initBot();
 
@@ -287,9 +382,18 @@ async function pollResponse(approvalId, timeoutSeconds = 600) {
   const timeout = timeoutSeconds * 1000;
   const pollInterval = 2000; // 2 seconds
 
+  // Track polling state to avoid conflicts
+  let wasPolling = bot.isPolling();
+
   // Enable polling temporarily to catch callback queries
-  bot.stopPolling();
-  bot.startPolling();
+  if (!wasPolling) {
+    try {
+      await bot.startPolling();
+    } catch (err) {
+      log('error', 'Failed to start polling', { error: err.message });
+      // Continue anyway - might already be polling
+    }
+  }
 
   return new Promise((resolve, reject) => {
     let responseReceived = false;
@@ -302,14 +406,26 @@ async function pollResponse(approvalId, timeoutSeconds = 600) {
       try {
         if (callbackHandler) {
           bot.removeListener('callback_query', callbackHandler);
+          callbackHandler = null;
         }
         if (textHandler) {
           bot.removeListener('message', textHandler);
+          textHandler = null;
         }
         if (checkTimeout) {
           clearInterval(checkTimeout);
+          checkTimeout = null;
         }
-        bot.stopPolling();
+
+        // Only stop polling if we started it
+        if (!wasPolling && bot.isPolling()) {
+          bot.stopPolling().catch(err => {
+            log('error', 'Error stopping polling', { error: err.message });
+          });
+        }
+
+        // Clean up approval immediately
+        pendingApprovals.delete(approvalId);
       } catch (err) {
         log('error', 'Error during cleanup', { error: err.message });
       }
@@ -337,7 +453,6 @@ async function pollResponse(approvalId, timeoutSeconds = 600) {
               if (msg.chat.id.toString() === config.chat_id && msg.text) {
                 cleanup();
 
-                pendingApprovals.delete(approvalId);
                 log('info', 'Approval response received (custom text)', {
                   approval_id: approvalId,
                   response: msg.text.substring(0, 50)
@@ -356,10 +471,8 @@ async function pollResponse(approvalId, timeoutSeconds = 600) {
           }
 
           // Regular option selected
-          cleanup();
-
           const selectedOption = approval.options[data.idx];
-          pendingApprovals.delete(approvalId);
+          cleanup();
 
           log('info', 'Approval response received', {
             approval_id: approvalId,
@@ -383,7 +496,6 @@ async function pollResponse(approvalId, timeoutSeconds = 600) {
         if (Date.now() - startTime >= timeout) {
           if (!responseReceived) {
             cleanup();
-            pendingApprovals.delete(approvalId);
 
             log('info', 'Approval request timed out', { approval_id: approvalId });
 
@@ -691,8 +803,47 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
+// Health check function
+async function healthCheck() {
+  console.log('🏥 Telegram MCP Server Health Check\n');
+
+  try {
+    // 1. Check configuration
+    console.log('1️⃣ Checking configuration...');
+    const testConfig = loadConfig();
+    console.log('   ✅ Configuration valid');
+    console.log(`   📄 Config path: ${CONFIG_PATH}`);
+    console.log(`   🤖 Bot token: ${testConfig.bot_token.substring(0, 10)}...`);
+    console.log(`   💬 Chat ID: ${testConfig.chat_id}`);
+
+    // 2. Check bot token
+    console.log('\n2️⃣ Testing bot connection...');
+    const testBot = new TelegramBot(testConfig.bot_token, { polling: false });
+    const botInfo = await testBot.getMe();
+    console.log(`   ✅ Bot connected: @${botInfo.username}`);
+
+    // 3. Check dependencies
+    console.log('\n3️⃣ Checking dependencies...');
+    console.log('   ✅ @modelcontextprotocol/sdk: installed');
+    console.log('   ✅ node-telegram-bot-api: installed');
+    console.log('   ✅ js-yaml: installed');
+
+    console.log('\n✅ Health check passed! Server is ready.\n');
+    process.exit(0);
+  } catch (error) {
+    console.log(`\n❌ Health check failed: ${error.message}\n`);
+    process.exit(1);
+  }
+}
+
 // Start server
 async function main() {
+  // Check for health check flag
+  if (process.argv.includes('--health')) {
+    await healthCheck();
+    return;
+  }
+
   try {
     const transport = new StdioServerTransport();
     await server.connect(transport);

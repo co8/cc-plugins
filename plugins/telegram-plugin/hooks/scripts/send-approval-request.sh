@@ -1,9 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
+# Source config helper library
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/lib/config-helper.sh"
+
 # Check dependencies
-if ! command -v jq >/dev/null 2>&1; then
-  echo '{"continue": true, "suppressOutput": true}'
+if ! check_jq; then
+  cat  # Consume stdin to prevent pipe errors
   exit 0
 fi
 
@@ -11,8 +15,8 @@ fi
 input=$(cat)
 
 # Load configuration
-CONFIG_FILE="$HOME/.claude/telegram.local.md"
-if [ ! -f "$CONFIG_FILE" ]; then
+CONFIG_FILE=$(get_config_path)
+if [ $? -ne 0 ]; then
   # Config not found, allow normal flow
   echo '{"continue": true, "suppressOutput": true}'
   exit 0
