@@ -13,6 +13,7 @@ Control and monitor Claude Code remotely via Telegram. Receive task updates, res
 
 ## Features
 
+- **🚀 Auto-Setup Detection**: Automatically prompts for configuration on first use
 - **📬 Smart Notifications**: Get notified about task completions, errors, session events, and important insights
 - **✅ Remote Approvals**: Respond to Claude's questions via Telegram inline keyboards
 - **🔔 Keyword Detection**: Automatically detect suggestions, clarifications, and discoveries
@@ -27,13 +28,24 @@ Control and monitor Claude Code remotely via Telegram. Receive task updates, res
 
 ## Installation
 
+### Auto-Setup Detection
+
+When you first start Claude Code with the telegram-plugin installed, it will automatically detect if configuration is needed and prompt you with:
+
+- ❌ **No Configuration**: Prompts you to run `/telegram-plugin:configure`
+- ✅ **Configuration Found (new)**: Reminds you to enable MCP server and verify setup
+- ✅ **Configuration Found (existing)**: Runs silently in the background
+
+This means you don't need to remember setup steps - the plugin will guide you automatically!
+
 ### Quick Setup (Interactive)
 
 ```bash
-/telegram:configure
+/telegram-plugin:configure
 ```
 
 Follow the guided setup to:
+
 1. Create your Telegram bot (or enter existing token)
 2. Get your chat ID
 3. Test the connection
@@ -42,11 +54,13 @@ Follow the guided setup to:
 ### Manual Setup
 
 1. Create bot with [@BotFather](https://t.me/botfather):
+
    - Send `/newbot` to @BotFather
    - Choose a name and username
    - Copy the bot token
 
 2. Get your chat ID:
+
    - Send a message to your bot
    - Visit: `https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates`
    - Copy the `chat.id` value
@@ -54,30 +68,30 @@ Follow the guided setup to:
 3. Create configuration file at `.claude/telegram.local.md`:
 
    **Note**: Configuration files are discovered in priority order:
+
    - Project-specific: `$PROJECT/.claude/telegram.local.md` (if `CLAUDE_PROJECT_DIR` is set)
    - Global fallback: `~/.claude/telegram.local.md`
 
-```yaml
----
-bot_token: "YOUR_BOT_TOKEN_HERE"
-chat_id: "YOUR_CHAT_ID_HERE"
-timeout_seconds: 600
-notifications:
-  todo_completions: true
-  errors: true
-  session_events: true
-  smart_detection: true
-smart_keywords: ["suggest", "recommend", "discovered", "insight", "clarify", "important", "note", "warning"]
-logging_level: "errors"
-batch_window_seconds: 30
----
+   Example configuration:
 
-# Telegram Plugin Configuration
+   ```yaml
+   ---
+   bot_token: "YOUR_BOT_TOKEN_HERE"
+   chat_id: "YOUR_CHAT_ID_HERE"
+   timeout_seconds: 600
+   notifications:
+     todo_completions: true
+     errors: true
+     session_events: true
+     smart_detection: true
+   smart_keywords: ["suggest", "recommend", "discovered", "insight", "clarify", "important", "note", "warning"]
+   logging_level: "errors"
+   batch_window_seconds: 30
+   ---
 
-This file stores your Telegram bot credentials and notification preferences.
-
-**Security Note**: This file is gitignored and should NEVER be committed to version control.
-```
+   This file stores your Telegram bot credentials and notification preferences.
+   **Security Note**: This file is gitignored and should NEVER be committed to version control.
+   ```
 
 4. **Enable MCP Server** (Required):
 
@@ -112,7 +126,7 @@ This file stores your Telegram bot credentials and notification preferences.
 5. Test connection:
 
    ```bash
-   /telegram:test
+   /telegram-plugin:test
    ```
 
 ## Usage
