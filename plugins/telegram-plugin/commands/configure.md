@@ -57,7 +57,27 @@ Ask user to paste their bot token.
 
 **Note:** Use `jq` for JSON parsing if available, otherwise extract manually using grep/sed.
 
-### Step 3: Create Configuration File
+### Step 3: Install MCP Server Dependencies
+
+Before creating the config, ensure the MCP server is ready:
+
+1. Navigate to the MCP server directory:
+   ```bash
+   cd $CLAUDE_PLUGIN_ROOT/mcp-server
+   ```
+
+2. Install Node.js dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Verify installation:
+   - Check that `node_modules/` directory exists
+   - Check that key dependencies are installed: `@modelcontextprotocol/sdk`, `node-telegram-bot-api`
+
+4. If npm install fails, provide troubleshooting steps
+
+### Step 4: Create Configuration File
 
 Create or update `~/.claude/telegram.local.md` with user's credentials:
 
@@ -97,9 +117,40 @@ Edit this file to customize:
 Run `/telegram:test` to verify your configuration.
 ```
 
-### Step 4: Test Connection
+### Step 5: Verify Plugin Components
 
-After creating config, run `/telegram:test` to verify bot works.
+1. **Check MCP Server Configuration:**
+   - Verify `.mcp.json` exists in plugin root
+   - Confirm MCP server will auto-start with Claude Code
+
+2. **Check Hooks Configuration:**
+   - Verify `hooks/hooks.json` exists
+   - Confirm hooks are configured for:
+     - PostToolUse (TodoWrite notifications)
+     - PreToolUse (AskUserQuestion approvals)
+     - SessionStart/SessionEnd (session notifications)
+     - Notification (smart detection)
+
+3. **Display Setup Summary:**
+   - Show configured bot username
+   - Show chat ID
+   - List enabled notification types
+   - Confirm MCP server is ready
+   - Confirm hooks are active
+
+### Step 6: Test Connection
+
+After setup is complete:
+
+1. Run `/telegram:test` to verify:
+   - Bot token is valid
+   - Chat ID is correct
+   - MCP server can start
+   - Test message can be sent
+
+2. Send a test notification to Telegram
+
+3. Display success message with next steps
 
 ## Manual Configuration (Option 2)
 
