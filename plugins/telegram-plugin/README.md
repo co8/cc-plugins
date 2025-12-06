@@ -1,5 +1,9 @@
 # Telegram Plugin for Claude Code
 
+![Version](https://img.shields.io/badge/version-0.1.4-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen)
+
 Control and monitor Claude Code remotely via Telegram. Receive task updates, respond to approval requests, and stay connected to your development workflow from anywhere.
 
 ## Features
