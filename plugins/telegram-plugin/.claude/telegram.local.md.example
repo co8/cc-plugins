@@ -2,6 +2,7 @@
 bot_token: "YOUR_BOT_TOKEN_HERE"
 chat_id: "YOUR_CHAT_ID_HERE"
 timeout_seconds: 600
+bidirectional_communication: true
 notifications:
   todo_completions: true
   errors: true
@@ -70,6 +71,7 @@ The plugin checks for project-specific config first (when `CLAUDE_PROJECT_DIR` e
 ### Optional Settings
 
 - **timeout_seconds** (default: 600): How long to wait for approval responses before proceeding
+- **bidirectional_communication** (default: false): Enable two-way messaging - Claude can listen for and respond to your Telegram messages
 - **logging_level** ("all" | "errors" | "none"): Message logging level
 - **batch_window_seconds** (default: 30): Time window to batch similar notifications
 
@@ -137,6 +139,7 @@ Minimal notifications, errors only:
 bot_token: "your-token"
 chat_id: "your-chat-id"
 timeout_seconds: 600
+bidirectional_communication: false
 notifications:
   todo_completions: false
   errors: true
@@ -146,6 +149,33 @@ logging_level: "errors"
 batch_window_seconds: 30
 ---
 ```
+
+### Bidirectional Communication Example
+
+Enable two-way messaging to send commands to Claude via Telegram:
+
+```yaml
+---
+bot_token: "your-token"
+chat_id: "your-chat-id"
+timeout_seconds: 600
+bidirectional_communication: true
+notifications:
+  todo_completions: true
+  errors: true
+  session_events: true
+  smart_detection: true
+smart_keywords: ["suggest", "recommend", "discovered", "insight", "clarify", "important"]
+logging_level: "errors"
+batch_window_seconds: 30
+---
+```
+
+When enabled, Claude will:
+• Listen for your Telegram messages 📨
+• React with 🤖 emoji to acknowledge receipt
+• Queue your messages for processing
+• Allow you to send commands remotely
 
 ## Troubleshooting
 

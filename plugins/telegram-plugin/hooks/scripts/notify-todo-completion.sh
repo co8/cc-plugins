@@ -15,12 +15,11 @@ fi
 input=$(cat)
 
 # Load configuration
-CONFIG_FILE=$(get_config_path)
-if [ $? -ne 0 ]; then
+CONFIG_FILE=$(get_config_path) || {
   # Config not found, skip silently
   echo '{"continue": true, "suppressOutput": true}'
   exit 0
-fi
+}
 
 # Extract notification settings
 todo_completions_enabled=$(get_bool_config "$CONFIG_FILE" "todo_completions" "false")
@@ -57,21 +56,41 @@ if [ "$completed_count" -eq 0 ]; then
   exit 0
 fi
 
-# Format message
+# Format message with emojis, no exclamation points
 if [ "$completed_count" -eq 1 ]; then
-  message="✅ *Task Completed*\n\n${completed_todos}"
+  message="✅ *Task Completed* 🎯\n\n${completed_todos}"
 else
-  message="✅ *${completed_count} Tasks Completed*\n\n${completed_todos}"
+  message="✅ *${completed_count} Tasks Completed* 🎯\n\n${completed_todos}"
 fi
 
 # Get project directory for context
 project=$(echo "$input" | jq -r '.cwd' 2>/dev/null | xargs basename 2>/dev/null || echo "unknown")
 
-# Output system message for Claude to handle
-echo "{
-  \"continue\": true,
-  \"suppressOutput\": true,
-  \"systemMessage\": \"Telegram notification queued: ${completed_count} task(s) completed. Use send_message tool to notify user.\"
-}"
+# Get bot token and chat ID from config
+bot_token=$(get_config_value "$CONFIG_FILE" "bot_token")
+chat_id=$(get_config_value "$CONFIG_FILE" "chat_id")
+
+if [ -z "$bot_token" ] || [ -z "$chat_id" ]; then
+  # Missing config, just inform Claude
+  echo "{
+    \"continue\": true,
+    \"suppressOutput\": true,
+    \"systemMessage\": \"Telegram notification queued: ${completed_count} task(s) completed. Missing bot_token or chat_id in config.\"
+  }"
+  exit 0
+fi
+
+# Actually send the message via Telegram API
+if send_telegram_message "$message" "$chat_id" "$bot_token"; then
+  # Success - silent continuation
+  echo '{"continue": true, "suppressOutput": true}'
+else
+  # Failed to send, inform Claude
+  echo "{
+    \"continue\": true,
+    \"suppressOutput\": true,
+    \"systemMessage\": \"Telegram notification failed: ${completed_count} task(s) completed but message could not be sent.\"
+  }"
+fi
 
 exit 0

@@ -1,6 +1,6 @@
 # Telegram Plugin for Claude Code
 
-![Version](https://img.shields.io/badge/version-0.1.8-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen) ![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-8B5CF6?logo=anthropic&logoColor=white) ![Claude Hooks](https://img.shields.io/badge/Claude_Hooks-Enabled-7C3AED?logo=anthropic&logoColor=white) ![Telegram Bot API](https://img.shields.io/badge/Telegram%20Bot%20API-7.0-26A5E4?logo=telegram) ![MCP](https://img.shields.io/badge/MCP-Server-purple) ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)
+![Version](https://img.shields.io/badge/version-0.1.9-blue) ![Tests](https://img.shields.io/badge/tests-98%2F98%20passing-brightgreen) ![License](https://img.shields.io/badge/license-MIT-green) ![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen) ![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-8B5CF6?logo=anthropic&logoColor=white) ![Claude Hooks](https://img.shields.io/badge/Claude_Hooks-Enabled-7C3AED?logo=anthropic&logoColor=white) ![Telegram Bot API](https://img.shields.io/badge/Telegram%20Bot%20API-7.0-26A5E4?logo=telegram) ![MCP](https://img.shields.io/badge/MCP-Server-purple) ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)
 
 Control and monitor Claude Code remotely via Telegram. Receive task updates, respond to approval requests, and stay connected to your development workflow from anywhere.
 
@@ -247,16 +247,31 @@ The plugin intelligently batches notifications within the configured window to:
 ### Documentation
 
 - [TESTING.md](TESTING.md) - Comprehensive testing guide with test suites and regression tests
+- [TESTING_GUIDE.md](TESTING_GUIDE.md) - Complete testing guide with 98 automated tests
+- [TESTING_ROADMAP.md](TESTING_ROADMAP.md) - Testing roadmap and future features
 - [BUGFIXES.md](BUGFIXES.md) - Detailed bug fixes and technical explanations
 - [CHANGELOG.md](CHANGELOG.md) - Version history and release notes
 
 ### Running Tests
 
+**Quick Test:**
+
 ```bash
-npm test
+./run-all-tests.sh  # Run all automated tests (98 tests)
 ```
 
-See [TESTING.md](TESTING.md) for comprehensive testing procedures and test cases.
+**Individual Test Suites:**
+
+```bash
+cd mcp-server
+npm test                 # Jest unit tests (85 tests)
+npm run test:hooks       # Bash hook tests (13 tests)
+node test-bidirectional.js  # Manual bidirectional tests (5 tests)
+```
+
+**Test Status:** ✅ 98/98 automated tests passing
+
+See [TESTING_GUIDE.md](TESTING_GUIDE.md) for comprehensive testing procedures and test cases.
 
 ### MCP Server Development
 
