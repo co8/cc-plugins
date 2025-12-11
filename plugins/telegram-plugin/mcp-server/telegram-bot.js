@@ -59,6 +59,28 @@ const LOG_PATH = join(dirname(__dirname), "telegram.log");
 const MAX_LOG_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_LOG_FILES = 3;
 
+// Rate limiting for Telegram API
+class RateLimiter {
+  constructor(maxPerMinute = 30) {
+    this.maxPerMinute = maxPerMinute;
+    this.calls = [];
+  }
+
+  async throttle() {
+    const now = Date.now();
+    // Remove calls older than 1 minute
+    this.calls = this.calls.filter((t) => now - t < 60000);
+
+    if (this.calls.length >= this.maxPerMinute) {
+      // Wait until the oldest call is more than 1 minute old
+      const waitTime = 60000 - (now - this.calls[0]);
+      await new Promise((resolve) => setTimeout(resolve, waitTime + 100)); // Add 100ms buffer
+    }
+
+    this.calls.push(now);
+  }
+}
+
 // Configuration schema for validation
 const CONFIG_SCHEMA = {
   bot_token: { type: "string", required: true, minLength: 10 },
@@ -188,14 +210,34 @@ function loadConfig() {
   return config;
 }
 
-// FIX #4: Markdown escaping function
-function escapeMarkdown(text) {
+// Convert Markdown to HTML and escape for Telegram
+function markdownToHTML(text, options = { preserveFormatting: false }) {
   if (typeof text !== "string") return "";
 
-  // Escape special Markdown characters for Telegram MarkdownV2
-  // Need to escape: _ * [ ] ( ) ~ ` > # + - = | { } . ! \
-  // IMPORTANT: Escape backslash first to avoid double-escaping
-  return text.replace(/\\/g, "\\\\").replace(/[_*\[\]()~`>#+=|{}.!-]/g, "\\$&");
+  // First, escape HTML special characters
+  let result = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  if (options.preserveFormatting) {
+    // Convert Markdown syntax to HTML tags
+    // Bold: *text* -> <b>text</b>
+    result = result.replace(/\*([^*]+)\*/g, "<b>$1</b>");
+
+    // Italic: _text_ -> <i>text</i>
+    result = result.replace(/_([^_]+)_/g, "<i>$1</i>");
+
+    // Code: `text` -> <code>text</code>
+    result = result.replace(/`([^`]+)`/g, "<code>$1</code>");
+  }
+
+  return result;
+}
+
+// Legacy function name for compatibility
+function escapeMarkdown(text, options) {
+  return markdownToHTML(text, options);
 }
 
 // Rotate log files when max size is reached
@@ -291,6 +333,10 @@ class MessageBatcher {
 // Approval request storage
 const pendingApprovals = new Map();
 
+// Command queue for incoming Telegram messages
+const commandQueue = [];
+let isListeningForCommands = false;
+
 // FIX #3: Periodic cleanup for pendingApprovals
 function cleanupOldApprovals() {
   const now = Date.now();
@@ -316,19 +362,27 @@ function cleanupOldApprovals() {
   }
 }
 
-// Run cleanup every hour
-setInterval(cleanupOldApprovals, 60 * 60 * 1000);
+// Run cleanup every hour with error handling
+setInterval(() => {
+  try {
+    cleanupOldApprovals();
+  } catch (err) {
+    log("error", "Approval cleanup failed", { error: err.message });
+  }
+}, 60 * 60 * 1000);
 
 // Initialize Telegram bot
 let bot = null;
 let config = null;
 let batcher = null;
 let botInfo = null;
+let rateLimiter = null;
 
 async function initBot() {
   config = loadConfig();
   bot = new TelegramBot(config.bot_token, { polling: false });
   batcher = new MessageBatcher(config.batch_window_seconds);
+  rateLimiter = new RateLimiter(30); // 30 messages per minute
 
   // Get bot info to identify own messages
   try {
@@ -344,6 +398,123 @@ async function initBot() {
   }
 }
 
+// Start listening for incoming messages and commands
+async function startMessageListener() {
+  if (isListeningForCommands) {
+    log("info", "Message listener already active");
+    return { success: true, already_active: true };
+  }
+
+  if (!bot) await initBot();
+
+  try {
+    // Start polling if not already polling
+    if (!bot.isPolling()) {
+      await bot.startPolling();
+      log("info", "Started polling for messages");
+    }
+
+    // Listen for text messages
+    bot.on("message", async (msg) => {
+      // Ignore messages from the bot itself
+      if (botInfo && msg.from && msg.from.id === botInfo.id) {
+        return;
+      }
+
+      // Only process messages from configured chat
+      if (msg.chat.id.toString() !== config.chat_id) {
+        log("warn", "Ignoring message from unauthorized chat", {
+          chat_id: msg.chat.id,
+        });
+        return;
+      }
+
+      // Process text messages as commands
+      if (msg.text) {
+        const command = {
+          id: msg.message_id,
+          text: msg.text,
+          from: msg.from.username || msg.from.first_name,
+          timestamp: msg.date * 1000,
+          chat_id: msg.chat.id,
+        };
+
+        commandQueue.push(command);
+        log("info", "Command received", {
+          command: msg.text.substring(0, 50),
+          from: command.from,
+        });
+
+        // React with robot emoji to acknowledge receipt
+        try {
+          await bot.setMessageReaction(config.chat_id, msg.message_id, [
+            { type: "emoji", emoji: "🤖" },
+          ]);
+        } catch (err) {
+          log("info", "Could not add robot reaction", {
+            error: err.message,
+          });
+        }
+      }
+    });
+
+    isListeningForCommands = true;
+    log("info", "Message listener started successfully");
+
+    return {
+      success: true,
+      listening: true,
+      bot_username: botInfo?.username,
+    };
+  } catch (error) {
+    log("error", "Failed to start message listener", { error: error.message });
+    throw error;
+  }
+}
+
+// Stop listening for incoming messages
+async function stopMessageListener() {
+  if (!isListeningForCommands) {
+    return { success: true, already_stopped: true };
+  }
+
+  try {
+    if (bot && bot.isPolling()) {
+      await bot.stopPolling();
+      log("info", "Stopped polling for messages");
+    }
+
+    bot.removeAllListeners("message");
+    isListeningForCommands = false;
+    commandQueue.length = 0; // Clear queue
+
+    log("info", "Message listener stopped");
+    return { success: true, listening: false };
+  } catch (error) {
+    log("error", "Failed to stop message listener", { error: error.message });
+    throw error;
+  }
+}
+
+// Get pending commands from queue
+function getPendingCommands(limit = 10) {
+  const commands = commandQueue.splice(0, limit);
+  log("info", "Retrieved pending commands", { count: commands.length });
+  return {
+    commands,
+    remaining: commandQueue.length,
+  };
+}
+
+// Check if listener is active
+function getListenerStatus() {
+  return {
+    listening: isListeningForCommands,
+    pending_commands: commandQueue.length,
+    polling_active: bot ? bot.isPolling() : false,
+  };
+}
+
 // Send message to Telegram with retry logic
 async function sendMessage(
   text,
@@ -353,11 +524,14 @@ async function sendMessage(
 ) {
   if (!bot) await initBot();
 
+  // Apply rate limiting
+  await rateLimiter.throttle();
+
   let lastError;
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const message = await bot.sendMessage(config.chat_id, text, {
-        parse_mode: "MarkdownV2",
+        parse_mode: "HTML",
         ...options,
       });
 
@@ -416,19 +590,19 @@ async function sendApprovalRequest(question, options, header) {
       },
     ]);
 
-    // Escape user-provided text in Markdown
-    const escapedQuestion = escapeMarkdown(question);
-    const escapedHeader = escapeMarkdown(header || "Approval Request");
+    // Escape user-provided text for HTML
+    const escapedQuestion = markdownToHTML(question);
+    const escapedHeader = markdownToHTML(header || "Approval Request");
     const escapedOptions = options
       .map(
         (o, i) =>
-          `${i + 1}\\. *${escapeMarkdown(o.label)}*: ${escapeMarkdown(
+          `${i + 1}. <b>${markdownToHTML(o.label)}</b>: ${markdownToHTML(
             o.description
           )}`
       )
       .join("\n");
 
-    const messageText = `🤔 *${escapedHeader}*\n\n${escapedQuestion}\n\n_Options\\:_\n${escapedOptions}`;
+    const messageText = `🤔 <b>${escapedHeader}</b>\n\n${escapedQuestion}\n\n<i>Options:</i>\n${escapedOptions}`;
 
     // Debug logging to file
     const debugPath = join(dirname(__dirname), "debug-approval.log");
@@ -445,7 +619,7 @@ ${messageText}
     appendFileSync(debugPath, debugInfo);
 
     const message = await bot.sendMessage(config.chat_id, messageText, {
-      parse_mode: "MarkdownV2",
+      parse_mode: "HTML",
       reply_markup: {
         inline_keyboard: keyboard,
       },
@@ -545,7 +719,16 @@ async function pollResponse(approvalId, timeoutSeconds = 600) {
         if (responseReceived) return;
 
         responseReceived = true;
-        const data = JSON.parse(callbackQuery.data);
+        let data;
+        try {
+          data = JSON.parse(callbackQuery.data);
+        } catch (err) {
+          log("error", "Invalid callback data", { error: err.message });
+          await bot.answerCallbackQuery(callbackQuery.id, {
+            text: "Invalid response format",
+          });
+          return;
+        }
 
         try {
           // Acknowledge the callback
@@ -554,9 +737,9 @@ async function pollResponse(approvalId, timeoutSeconds = 600) {
           // Send acknowledgement message to user
           await bot.sendMessage(
             config.chat_id,
-            `✅ Response received: *${escapeMarkdown(data.label)}*`,
+            `✅ Response received: <b>${markdownToHTML(data.label)}</b>`,
             {
-              parse_mode: "MarkdownV2",
+              parse_mode: "HTML",
               reply_to_message_id: callbackQuery.message.message_id,
             }
           );
@@ -872,6 +1055,48 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ["messages"],
         },
       },
+      {
+        name: "start_listener",
+        description:
+          "Start listening for incoming messages from Telegram. Once started, the bot will queue all messages sent by the user.",
+        inputSchema: {
+          type: "object",
+          properties: {},
+        },
+      },
+      {
+        name: "stop_listener",
+        description:
+          "Stop listening for incoming messages from Telegram and clear the command queue.",
+        inputSchema: {
+          type: "object",
+          properties: {},
+        },
+      },
+      {
+        name: "get_pending_commands",
+        description:
+          "Retrieve pending commands from the message queue. Returns up to specified limit of commands.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            limit: {
+              type: "number",
+              description: "Maximum number of commands to retrieve (default: 10)",
+              default: 10,
+            },
+          },
+        },
+      },
+      {
+        name: "get_listener_status",
+        description:
+          "Get the current status of the message listener, including whether it's active and how many pending commands are in the queue.",
+        inputSchema: {
+          type: "object",
+          properties: {},
+        },
+      },
     ],
   };
 });
@@ -884,7 +1109,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         validateSendMessage(request.params.arguments);
         const { text, priority = "normal" } = request.params.arguments;
         // Escape markdown special characters for Telegram MarkdownV2
-        const escapedText = escapeMarkdown(text);
+        // Use preserveFormatting to allow intentional bold/italic
+        const escapedText = escapeMarkdown(text, { preserveFormatting: true });
         const result = await sendMessage(escapedText, priority);
         return {
           content: [
@@ -938,6 +1164,55 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
+      case "start_listener": {
+        const result = await startMessageListener();
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case "stop_listener": {
+        const result = await stopMessageListener();
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case "get_pending_commands": {
+        const { limit = 10 } = request.params.arguments || {};
+        const result = getPendingCommands(limit);
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case "get_listener_status": {
+        const result = getListenerStatus();
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
       default:
         throw new Error(`Unknown tool: ${request.params.name}`);
     }
@@ -967,7 +1242,7 @@ async function healthCheck() {
     const testConfig = loadConfig();
     console.log("   ✅ Configuration valid");
     console.log(`   📄 Config path: ${CONFIG_PATH}`);
-    console.log(`   🤖 Bot token: ${testConfig.bot_token.substring(0, 10)}...`);
+    console.log(`   🤖 Bot token: ${'*'.repeat(10)}... (${testConfig.bot_token.length} chars)`);
     console.log(`   💬 Chat ID: ${testConfig.chat_id}`);
 
     // 2. Check bot token
@@ -989,6 +1264,41 @@ async function healthCheck() {
     process.exit(1);
   }
 }
+
+// Graceful shutdown handler
+async function gracefulShutdown(signal) {
+  log("info", `Received ${signal}, shutting down gracefully...`);
+
+  try {
+    // Flush pending messages
+    if (batcher) {
+      const combined = batcher.flush();
+      if (combined) {
+        await sendMessage(combined, "high").catch((err) => {
+          log("error", "Failed to flush messages on shutdown", {
+            error: err.message,
+          });
+        });
+      }
+    }
+
+    // Stop polling if active
+    if (bot && bot.isPolling()) {
+      await bot.stopPolling();
+      log("info", "Stopped polling");
+    }
+
+    log("info", "Shutdown complete");
+    process.exit(0);
+  } catch (error) {
+    log("error", "Error during shutdown", { error: error.message });
+    process.exit(1);
+  }
+}
+
+// Register shutdown handlers
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
 
 // Start server
 async function main() {

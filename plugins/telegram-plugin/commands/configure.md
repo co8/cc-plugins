@@ -125,7 +125,19 @@ Before creating the config, ensure the MCP server is ready:
    - Check write permissions in mcp-server directory
    - Try: `npm cache clean --force && npm install`
 
-### Step 4: Create Configuration File
+### Step 4: Ask About Bidirectional Communication
+
+Ask the user if they want to enable bidirectional communication (two-way messaging):
+
+**Question:** "Would you like to enable bidirectional communication? This allows you to send commands to Claude via Telegram and receive responses. (Recommended: Yes)"
+
+**Options:**
+- Yes (default) - Claude will listen for and respond to your Telegram messages, react with 🤖 emoji when messages received
+- No - One-way notifications only (Claude sends, you receive)
+
+Store their choice for the configuration file.
+
+### Step 5: Create Configuration File
 
 Create or update `~/.claude/telegram.local.md` with user's credentials:
 
@@ -134,6 +146,7 @@ Create or update `~/.claude/telegram.local.md` with user's credentials:
 bot_token: "[USER'S BOT TOKEN]"
 chat_id: "[USER'S CHAT ID]"
 timeout_seconds: 600
+bidirectional_communication: [true if yes, false if no]
 notifications:
   todo_completions: true
   errors: true
@@ -154,11 +167,20 @@ Your Telegram bot is configured and ready to use!
 ## Customization
 
 Edit this file to customize:
+- `bidirectional_communication`: Enable two-way messaging (default: true)
 - `timeout_seconds`: How long to wait for approval responses (default: 600)
 - `notifications`: Enable/disable notification types
 - `smart_keywords`: Keywords that trigger smart notifications
 - `logging_level`: "all", "errors", or "none"
 - `batch_window_seconds`: Time window to combine similar notifications
+
+## Bidirectional Communication
+
+When enabled (true), Claude will:
+• Listen for your Telegram messages 📨
+• React with 🤖 emoji to acknowledge receipt
+• Queue your messages for processing
+• Allow you to send commands remotely
 
 ## Testing
 
@@ -250,6 +272,7 @@ Create file at: `~/.claude/telegram.local.md`
 bot_token: "YOUR_BOT_TOKEN_HERE"
 chat_id: "YOUR_CHAT_ID_HERE"
 timeout_seconds: 600
+bidirectional_communication: true
 notifications:
   todo_completions: true
   errors: true
@@ -266,6 +289,7 @@ Replace YOUR_BOT_TOKEN_HERE and YOUR_CHAT_ID_HERE with your actual credentials.
 
 ## Notification Settings
 
+- `bidirectional_communication`: Enable two-way messaging (default: true)
 - `todo_completions`: Get notified when tasks complete
 - `errors`: Receive error and warning alerts
 - `session_events`: Know when Claude Code starts/stops
@@ -277,6 +301,14 @@ Replace YOUR_BOT_TOKEN_HERE and YOUR_CHAT_ID_HERE with your actual credentials.
 - `smart_keywords`: Keywords for smart detection
 - `logging_level`: "all", "errors", or "none"
 - `batch_window_seconds`: Notification batching window (default: 30)
+
+## Bidirectional Communication
+
+When enabled, you can send messages to Claude via Telegram:
+• Claude listens for your messages 📨
+• Reacts with 🤖 emoji when received
+• Processes your commands remotely
+• Enables true two-way interaction
 ```
 
 ### Enable MCP Server

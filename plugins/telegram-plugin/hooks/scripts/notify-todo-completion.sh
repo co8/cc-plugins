@@ -57,11 +57,11 @@ if [ "$completed_count" -eq 0 ]; then
   exit 0
 fi
 
-# Format message
+# Format message with emojis, no exclamation points
 if [ "$completed_count" -eq 1 ]; then
-  message="✅ *Task Completed*\n\n${completed_todos}"
+  message="✅ *Task Completed* 🎯\n\n${completed_todos}"
 else
-  message="✅ *${completed_count} Tasks Completed*\n\n${completed_todos}"
+  message="✅ *${completed_count} Tasks Completed* 🎯\n\n${completed_todos}"
 fi
 
 # Get project directory for context

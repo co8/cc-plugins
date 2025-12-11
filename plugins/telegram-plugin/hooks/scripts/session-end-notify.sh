@@ -33,13 +33,33 @@ fi
 project=$(echo "$input" | jq -r '.cwd' 2>/dev/null | xargs basename 2>/dev/null || echo "unknown")
 timestamp=$(date "+%H:%M:%S" 2>/dev/null || echo "unknown")
 
-message="🛑 *Claude Code Stopped*\n\n📁 Project: \`${project}\`\n⏰ Time: ${timestamp}"
+message="🛑 *Claude Code Stopped* 🏁\n\n📁 Project: \`${project}\`\n⏰ Time: ${timestamp}"
 
-# Inform Claude to send notification
-echo "{
-  \"continue\": true,
-  \"suppressOutput\": false,
-  \"systemMessage\": \"[Telegram Plugin] Session ended. Use send_message tool with priority='low' to send: ${message}\"
-}"
+# Get bot token and chat ID from config
+bot_token=$(get_config_value "$CONFIG_FILE" "bot_token")
+chat_id=$(get_config_value "$CONFIG_FILE" "chat_id")
+
+if [ -z "$bot_token" ] || [ -z "$chat_id" ]; then
+  # Missing config, just inform Claude
+  echo "{
+    \"continue\": true,
+    \"suppressOutput\": true,
+    \"systemMessage\": \"Telegram notification queued: Session ended. Missing bot_token or chat_id in config.\"
+  }"
+  exit 0
+fi
+
+# Actually send the message via Telegram API
+if send_telegram_message "$message" "$chat_id" "$bot_token"; then
+  # Success - silent continuation
+  echo '{"continue": true, "suppressOutput": true}'
+else
+  # Failed to send, inform Claude
+  echo "{
+    \"continue\": true,
+    \"suppressOutput\": true,
+    \"systemMessage\": \"Telegram notification failed: Session ended but message could not be sent.\"
+  }"
+fi
 
 exit 0

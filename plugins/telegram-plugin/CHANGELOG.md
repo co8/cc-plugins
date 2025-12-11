@@ -6,6 +6,83 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2024-12-11
+
+### Fixed
+
+- **HTML Formatting** 🎨
+  - Fixed Markdown formatting not displaying correctly in Telegram messages
+  - Switched from MarkdownV2 to HTML parse mode for better reliability
+  - Fixed bash helper library to properly convert Markdown to HTML
+  - Fixed `get_config_value` function to extract only first YAML frontmatter block
+  - Messages now display bold, italic, and code formatting correctly without asterisks showing
+
+### Added
+
+- **Bidirectional Communication** 🔄
+  - `start_listener` - Start listening for incoming Telegram messages
+  - `stop_listener` - Stop listening and clear command queue
+  - `get_pending_commands` - Retrieve queued messages from user
+  - `get_listener_status` - Check listener state and pending count
+  - New `UserPromptSubmit` hook to suggest checking for incoming messages
+  - Command queue for storing user messages
+
+- **Rate Limiting** ⚡
+  - `RateLimiter` class enforces 30 messages per minute
+  - Prevents hitting Telegram API limits
+  - Applied to all message sending operations
+
+- **Graceful Shutdown** 🛡️
+  - Flushes pending batched messages on shutdown
+  - Stops polling cleanly
+  - Handles SIGINT and SIGTERM signals
+  - Prevents message loss during restarts
+
+### Changed
+
+- **Message Style** ✨
+  - Added emojis to all notifications for better visual feedback
+  - Removed exclamation points (use emojis for emphasis instead)
+  - Task completion: `✅ *Task Completed* 🎯`
+  - Session start: `🚀 *Claude Code Started* 💻`
+  - Session end: `🛑 *Claude Code Stopped* 🏁`
+
+- **Autonomous Notifications** 📬
+  - Session start/end hooks now send messages directly
+  - Previously only suggested Claude send messages
+  - More reliable notification delivery
+
+### Security
+
+- **Token Protection** 🔒
+  - Health check now masks bot token: `**********... (46 chars)`
+  - Previously showed first 10 characters
+
+- **Error Handling** 🛠️
+  - Added try-catch around callback data JSON parsing
+  - Wrapped periodic cleanup in error handler
+  - Prevents crashes from malformed input
+
+### Improved
+
+- Better error messages throughout codebase
+- Enhanced logging for bidirectional communication
+- More robust polling state management
+- Documentation updated with new features
+
+### Technical
+
+- New `check-incoming-messages.sh` hook script
+- Message listener with chat authorization
+- Command queue with metadata (id, text, from, timestamp)
+- Bot self-identification to filter own messages
+
+### Documentation
+
+- Created `IMPROVEMENTS_2024-12.md` with detailed code review results
+- Updated `SKILL.md` with emoji guidelines
+- Added usage examples for bidirectional communication
+
 ## [0.1.5] - 2025-12-06
 
 ### Added

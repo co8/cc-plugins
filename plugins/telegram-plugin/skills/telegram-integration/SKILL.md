@@ -8,14 +8,14 @@ version: 0.1.0
 
 ## Overview
 
-This skill provides guidance for using and troubleshooting the Telegram plugin for Claude Code. The plugin enables remote monitoring and control of Claude Code sessions via Telegram, allowing developers to receive task updates, respond to approval requests, and stay connected to workflows from anywhere.
+This skill provides guidance for using and troubleshooting the Telegram plugin for Claude Code. The plugin enables remote monitoring and control of Claude Code sessions via Telegram, allowing developers to receive task updates, respond to approval requests, and stay connected to workflows from anywhere 📱
 
 **Core capabilities:**
-- Send notifications for task completions, errors, and insights
-- Request approvals via Telegram with inline keyboards
-- Batch similar notifications to reduce noise
-- Smart keyword detection for important messages
-- Session event tracking
+- Send notifications for task completions, errors, and insights 📬
+- Request approvals via Telegram with inline keyboards ⌨️
+- Batch similar notifications to reduce noise 🔕
+- Smart keyword detection for important messages 🎯
+- Session event tracking 📊
 
 ## When to Use This Skill
 
@@ -480,18 +480,21 @@ To test hooks without actual Telegram messages:
 ### Notification Design
 
 **DO:**
-- Use high priority sparingly (errors only)
-- Batch similar notifications together
-- Include context in messages (project name, file, etc.)
+- Use high priority sparingly (errors only) ⚠️
+- Batch similar notifications together 📦
+- Include context in messages (project name, file, etc.) 📝
 - Use Markdown for readability
-- Keep messages concise (< 200 chars ideal)
+- Keep messages concise (< 200 chars ideal) ✂️
+- Use emojis to make messages more engaging 🎨
+- Avoid exclamation points (use emojis instead)
 
 **DON'T:**
 - Send every minor event
 - Use high priority for informational updates
-- Include sensitive data in messages (API keys, passwords)
+- Include sensitive data in messages (API keys, passwords) 🔒
 - Spam with duplicate messages
 - Rely solely on notifications (check terminal too)
+- Use excessive exclamation points in messages
 
 ### Approval Requests
 
