@@ -590,14 +590,15 @@ async function sendApprovalRequest(question, options, header) {
       },
     ]);
 
-    // Escape user-provided text for HTML
-    const escapedQuestion = markdownToHTML(question);
-    const escapedHeader = markdownToHTML(header || "Approval Request");
+    // Escape user-provided text for HTML and convert Markdown formatting
+    const escapedQuestion = markdownToHTML(question, { preserveFormatting: true });
+    const escapedHeader = markdownToHTML(header || "Approval Request", { preserveFormatting: true });
     const escapedOptions = options
       .map(
         (o, i) =>
-          `${i + 1}. <b>${markdownToHTML(o.label)}</b>: ${markdownToHTML(
-            o.description
+          `${i + 1}. <b>${markdownToHTML(o.label, { preserveFormatting: true })}</b>: ${markdownToHTML(
+            o.description,
+            { preserveFormatting: true }
           )}`
       )
       .join("\n");
@@ -737,7 +738,7 @@ async function pollResponse(approvalId, timeoutSeconds = 600) {
           // Send acknowledgement message to user
           await bot.sendMessage(
             config.chat_id,
-            `✅ Response received: <b>${markdownToHTML(data.label)}</b>`,
+            `✅ Response received: <b>${markdownToHTML(data.label, { preserveFormatting: true })}</b>`,
             {
               parse_mode: "HTML",
               reply_to_message_id: callbackQuery.message.message_id,
@@ -829,8 +830,8 @@ async function batchNotifications(messages) {
   if (!bot) await initBot();
 
   for (const msg of messages) {
-    // Escape each message text before batching
-    const escapedText = escapeMarkdown(msg.text);
+    // Escape each message text before batching and convert Markdown formatting
+    const escapedText = escapeMarkdown(msg.text, { preserveFormatting: true });
     batcher.add(escapedText, msg.priority || "normal");
   }
 

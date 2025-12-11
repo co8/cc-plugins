@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.2.2] - 2024-12-11
+
+### Fixed
+
+- **Formatting in Approval Requests** 🔧
+  - Fixed approval request questions not showing formatted text
+  - Added `preserveFormatting: true` to all `markdownToHTML()` calls in:
+    - Approval request headers, questions, and option labels/descriptions
+    - Batch notification messages
+    - Callback acknowledgement messages
+  - All user-facing text now properly displays **bold**, _italic_, and `code` formatting
+
+## [0.2.1] - 2024-12-11
+
+### Fixed
+
+- Version bump and plugin metadata updates
+
 ## [0.2.0] - 2024-12-11
 
 ### Fixed
