@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.2.4] - 2024-12-12
+
 ## [0.2.3] - 2024-12-11
 
 ### Fixed
@@ -49,6 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - **Bidirectional Communication** 🔄
+
   - `start_listener` - Start listening for incoming Telegram messages
   - `stop_listener` - Stop listening and clear command queue
   - `get_pending_commands` - Retrieve queued messages from user
@@ -57,6 +60,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Command queue for storing user messages
 
 - **Rate Limiting** ⚡
+
   - `RateLimiter` class enforces 30 messages per minute
   - Prevents hitting Telegram API limits
   - Applied to all message sending operations
@@ -70,6 +74,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - **Message Style** ✨
+
   - Added emojis to all notifications for better visual feedback
   - Removed exclamation points (use emojis for emphasis instead)
   - Task completion: `✅ *Task Completed* 🎯`
@@ -84,6 +89,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Security
 
 - **Token Protection** 🔒
+
   - Health check now masks bot token: `**********... (46 chars)`
   - Previously showed first 10 characters
 
@@ -161,6 +167,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [0.1.0] - Initial Release
 
 ### Added
+
 - MCP server integration for Telegram Bot API
 - Three core tools:
   - `send_message` - Send text messages with priority levels
@@ -182,6 +189,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Connection test command (`/telegram-plugin:test`)
 
 ### Security
+
 - Bot token stored in local `.md` files (gitignored)
 - No tokens in code or version control
 - Markdown escaping to prevent injection attacks
