@@ -153,7 +153,7 @@ fi
 
 if [ "$pending_count" -gt 0 ]; then
   # There are pending messages - tell Claude to continue processing
-  echo '{"decision": "block", "reason": "📱 Processing pending Telegram messages..."}'
+  echo "📱 Processing pending Telegram messages..." >&2
   exit 2  # Exit code 2 tells Claude to continue
 else
   # No pending messages, let Claude rest
