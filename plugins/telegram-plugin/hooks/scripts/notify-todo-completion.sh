@@ -53,24 +53,36 @@ completed_count=$(echo "$todos" | jq '[.[] | select(.status == "completed")] | l
 cwd=$(echo "$input" | jq -r '.cwd' 2>/dev/null || echo "$PWD")
 message_id_file="${cwd}/.claude/telegram_task_message_id"
 
-# Build task list with checkboxes
+# Extract objective from in_progress or first pending task
+objective=$(echo "$todos" | jq -r '[.[] | select(.status == "in_progress" or .status == "pending")] | .[0].content // "Complete Tasks"' 2>/dev/null)
+# Truncate objective if too long
+if [ ${#objective} -gt 40 ]; then
+  objective="${objective:0:37}..."
+fi
+# Escape HTML entities in objective
+objective=$(echo "$objective" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g')
+
+# Build task list with styled checkboxes
 task_list=""
 while IFS= read -r todo_json; do
   status=$(echo "$todo_json" | jq -r '.status')
   content=$(echo "$todo_json" | jq -r '.content')
 
-  # Use checkbox based on status
-  if [ "$status" = "completed" ]; then
-    checkbox="☑"
-  else
-    checkbox="☐"
-  fi
+  # Escape HTML entities in content
+  escaped_content=$(echo "$content" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g')
 
-  task_list="${task_list}${checkbox} ${content}\n"
+  # Use styled formatting based on status
+  if [ "$status" = "completed" ]; then
+    # Green checkmark with bold white text
+    task_list="${task_list}✅ <b>${escaped_content}</b>\n"
+  else
+    # Light gray square with italic text
+    task_list="${task_list}⬜ <i>${escaped_content}</i>\n"
+  fi
 done < <(echo "$todos" | jq -c '.[]')
 
-# Format title with progress
-title="*${completed_count}/${total_count} Tasks Completed* 🎯"
+# Format title with progress and objective
+title="<b>${completed_count}/${total_count}: ${objective}</b> 🎯"
 
 # Combine title and task list
 message="${title}\n\n${task_list}"
@@ -104,12 +116,12 @@ if [ -f "$message_id_file" ]; then
   fi
 fi
 
-# Send a new message and store the message_id
+# Send a new message and store the message_id (message is already HTML-formatted)
 response=$(curl -s -X POST "https://api.telegram.org/bot${bot_token}/sendMessage" \
   -H "Content-Type: application/json" \
   -d "$(jq -n \
     --arg chat_id "$chat_id" \
-    --arg text "$(echo -e "$message" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' | sed -E 's/\*([^*]+)\*/<b>\1<\/b>/g')" \
+    --arg text "$(echo -e "$message")" \
     '{chat_id: $chat_id, text: $text, parse_mode: "HTML"}')")
 
 # Check if successful and extract message_id
