@@ -132,9 +132,68 @@ get_config_value() {
   echo "$value"
 }
 
+# Edit an existing Telegram message via Bot API
+# Usage: edit_telegram_message "message text" "chat_id" "message_id" "bot_token"
+edit_telegram_message() {
+  local message="$1"
+  local chat_id="$2"
+  local message_id="$3"
+  local bot_token="$4"
+
+  # Expand escape sequences (like \n) first
+  local expanded_message
+  expanded_message=$(echo -e "$message")
+
+  # Escape HTML special characters FIRST (before adding HTML tags)
+  local escaped_message
+  escaped_message=$(echo "$expanded_message" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g')
+
+  # Convert Markdown to HTML (this adds real HTML tags that won't be escaped)
+  # Bold: *text* -> <b>text</b>
+  local html_message
+  html_message=$(echo "$escaped_message" | sed -E 's/\*([^*]+)\*/<b>\1<\/b>/g')
+
+  # Italic: _text_ -> <i>text</i>
+  html_message=$(echo "$html_message" | sed -E 's/_([^_]+)_/<i>\1<\/i>/g')
+
+  # Code: `text` -> <code>text</code>
+  html_message=$(echo "$html_message" | sed -E 's/`([^`]+)`/<code>\1<\/code>/g')
+
+  # Edit via Telegram Bot API
+  local api_url="https://api.telegram.org/bot${bot_token}/editMessageText"
+
+  # Use jq to properly construct JSON payload (handles escaping automatically)
+  local json_payload
+  json_payload=$(jq -n \
+    --arg chat_id "$chat_id" \
+    --arg message_id "$message_id" \
+    --arg text "$html_message" \
+    '{chat_id: $chat_id, message_id: ($message_id | tonumber), text: $text, parse_mode: "HTML"}')
+
+  # Use curl to edit the message
+  local response
+  response=$(curl -s -X POST "$api_url" \
+    -H "Content-Type: application/json" \
+    -d "$json_payload" 2>&1)
+
+  # Check if successful
+  if echo "$response" | jq -e '.ok == true' >/dev/null 2>&1; then
+    return 0
+  else
+    # Log error but don't fail the hook
+    echo "[Telegram] Edit failed:" >&2
+    echo "$response" >&2
+    echo "" >&2
+    echo "JSON payload was:" >&2
+    echo "$json_payload" >&2
+    return 1
+  fi
+}
+
 # Export functions for use in other scripts
 export -f get_config_path
 export -f check_jq
 export -f get_bool_config
 export -f send_telegram_message
+export -f edit_telegram_message
 export -f get_config_value
