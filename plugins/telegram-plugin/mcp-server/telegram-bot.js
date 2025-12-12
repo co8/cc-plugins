@@ -229,8 +229,10 @@ function markdownToHTML(text, options = { preserveFormatting: false }) {
     let placeholderIndex = 0;
 
     // Helper to create placeholder
+    // Use a format that won't be matched by any markdown patterns
+    // Avoiding *, _, `, ~, [, ], <, >, and other markdown special chars
     const createPlaceholder = (html) => {
-      const id = `__PLACEHOLDER_${placeholderIndex++}__`;
+      const id = `XXXPH${placeholderIndex++}XXX`;
       placeholders.push({ id, html });
       return id;
     };
@@ -1190,7 +1192,7 @@ function validateBatchNotifications(args) {
 const server = new Server(
   {
     name: "telegram-bot",
-    version: "0.2.15",
+    version: "0.2.16",
   },
   {
     capabilities: {
