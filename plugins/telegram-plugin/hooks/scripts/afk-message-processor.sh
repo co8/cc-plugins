@@ -15,6 +15,7 @@ set -euo pipefail
 # Source config helper library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib/config-helper.sh"
+source "${SCRIPT_DIR}/lib/message-templates.sh"
 
 # Check dependencies
 if ! check_jq; then
@@ -129,8 +130,8 @@ if [ -n "$transcript_path" ] && [ "$transcript_path" != "null" ]; then
         # For todo updates, send as-is without the Claude header
         send_or_edit_telegram "$last_response" "$is_todo_update" >/dev/null 2>&1
       else
-        # For regular messages, prepend a header to indicate this is Claude's response
-        send_or_edit_telegram "💬 *Claude:*\n\n$last_response" "false" >/dev/null 2>&1
+        # For regular messages, use clean Claude response format
+        send_or_edit_telegram "💬 Claude\n\n$last_response" "false" >/dev/null 2>&1
       fi
     fi
   fi

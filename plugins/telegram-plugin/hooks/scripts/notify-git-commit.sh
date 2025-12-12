@@ -4,6 +4,7 @@ set -euo pipefail
 # Source config helper library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib/config-helper.sh"
+source "${SCRIPT_DIR}/lib/message-templates.sh"
 
 # Check dependencies
 if ! check_jq; then
@@ -67,8 +68,11 @@ fi
 # Get project info
 project=$(echo "$input" | jq -r '.cwd' 2>/dev/null | xargs basename 2>/dev/null || echo "unknown")
 
-# Build the notification message
-message="✅ *Git Commit*\n\n📁 Project: \`${project}\`\n💬 Message: ${commit_message}"
+# Get git commit hash if available
+commit_hash=$(git -C "$(echo "$input" | jq -r '.cwd' 2>/dev/null)" rev-parse --short HEAD 2>/dev/null || echo "")
+
+# Build the notification message using template
+message=$(template_git_commit "$project" "$commit_message" "$commit_hash")
 
 # Get bot token and chat ID from config
 bot_token=$(get_config_value "$CONFIG_FILE" "bot_token")

@@ -1192,7 +1192,7 @@ function validateBatchNotifications(args) {
 const server = new Server(
   {
     name: "telegram-bot",
-    version: "0.2.16",
+    version: "0.2.17",
   },
   {
     capabilities: {
