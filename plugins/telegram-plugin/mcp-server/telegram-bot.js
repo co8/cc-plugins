@@ -232,7 +232,12 @@ function markdownToHTML(text, options = { preserveFormatting: false }) {
 
     // Code blocks: ```language\ncode``` or ```code``` -> <pre><code>code</code></pre>
     // Handle optional language identifier and multiline content
-    result = result.replace(/```(?:\w+)?\n?([\s\S]+?)```/g, "<pre><code>$1</code></pre>");
+    result = result.replace(/```(\w+)?[\r\n]+([\s\S]*?)```/g, (match, lang, code) => {
+      if (lang) {
+        return `<pre><code class="language-${lang}">${code}</code></pre>`;
+      }
+      return `<pre><code>${code}</code></pre>`;
+    });
 
     // Inline code: `text` -> <code>text</code>
     // Use non-greedy match and handle escaped backticks
@@ -245,7 +250,7 @@ function markdownToHTML(text, options = { preserveFormatting: false }) {
     result = result.replace(/__(.+?)__/g, "<u>$1</u>");
 
     // Strikethrough: ~~text~~ -> <s>text</s>
-    result = result.replace(/~~(.+?)~~/g, "<s>$1</s>");
+    result = result.replace(/~~([\s\S]+?)~~/g, "<s>$1</s>");
 
     // Italic: *text* or _text_ -> <i>text</i> (process after double markers)
     result = result.replace(/\*(.+?)\*/g, "<i>$1</i>");
@@ -660,7 +665,6 @@ async function sendMessage(
     try {
       const message = await bot.sendMessage(config.chat_id, text, {
         parse_mode: "HTML",
-        link_preview_options: { is_disabled: true },
         ...options,
       });
 
@@ -1121,7 +1125,7 @@ function validateBatchNotifications(args) {
 const server = new Server(
   {
     name: "telegram-bot",
-    version: "0.2.8",
+    version: "0.2.9",
   },
   {
     capabilities: {
