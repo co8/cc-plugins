@@ -3,9 +3,12 @@ set -euo pipefail
 
 # AFK Mode Auto-Processing Hook (Stop Hook)
 #
-# This hook runs after Claude finishes responding. During AFK mode, it checks
-# if there are pending Telegram messages and tells Claude to continue processing
-# them. This creates an efficient polling loop during AFK sessions.
+# This hook runs after Claude finishes responding. During AFK mode, it:
+# 1. Forwards Claude's response to Telegram
+# 2. Checks for pending Telegram messages and continues processing if any exist
+#
+# This creates an efficient polling loop during AFK sessions with automatic
+# communication switching to Telegram.
 #
 # Token efficiency: Only continues when work exists, minimizes idle token usage.
 
@@ -37,6 +40,100 @@ afk_enabled=$(echo "$afk_state" | jq -r '.enabled // false' 2>/dev/null || echo 
 if [ "$afk_enabled" != "true" ]; then
   # AFK mode not active, let Claude stop normally
   exit 0
+fi
+
+# State file for storing todo message ID
+TODO_MESSAGE_ID_FILE="${CLAUDE_PLUGIN_ROOT}/.todo-message-id"
+
+# Helper function to send or edit message on Telegram
+send_or_edit_telegram() {
+  local message="$1"
+  local is_todo_update="$2"
+
+  # Get config path
+  config_file=$(get_config_path 2>/dev/null)
+  if [ -z "$config_file" ]; then
+    return 1
+  fi
+
+  # Extract bot token and chat ID
+  bot_token=$(get_config_value "$config_file" "bot_token")
+  chat_id=$(get_config_value "$config_file" "chat_id")
+
+  if [ -z "$bot_token" ] || [ -z "$chat_id" ]; then
+    return 1
+  fi
+
+  # If this is a todo update, try to edit existing message
+  if [ "$is_todo_update" = "true" ] && [ -f "$TODO_MESSAGE_ID_FILE" ]; then
+    todo_message_id=$(cat "$TODO_MESSAGE_ID_FILE" 2>/dev/null)
+    if [ -n "$todo_message_id" ] && [ "$todo_message_id" != "null" ]; then
+      # Try to edit the existing message
+      if edit_telegram_message "$message" "$chat_id" "$todo_message_id" "$bot_token" 2>/dev/null; then
+        return 0
+      fi
+      # If edit fails, fall through to send new message
+    fi
+  fi
+
+  # Send new message via Telegram API
+  response=$(send_telegram_message "$message" "$chat_id" "$bot_token" 2>/dev/null)
+
+  # If this is a todo update, store the message ID
+  if [ "$is_todo_update" = "true" ]; then
+    message_id=$(echo "$response" | jq -r '.result.message_id // ""' 2>/dev/null)
+    if [ -n "$message_id" ] && [ "$message_id" != "null" ]; then
+      echo "$message_id" > "$TODO_MESSAGE_ID_FILE"
+    fi
+  fi
+}
+
+# AFK mode is active - Forward Claude's response to Telegram
+# Extract transcript path from hook input
+transcript_path=$(echo "$input" | jq -r '.transcript_path // ""' 2>/dev/null)
+
+if [ -n "$transcript_path" ] && [ "$transcript_path" != "null" ]; then
+  # Expand ~ to home directory
+  transcript_path="${transcript_path/#\~/$HOME}"
+
+  if [ -f "$transcript_path" ]; then
+    # Extract the last assistant message from the transcript
+    # Read the file in reverse and find the first assistant message
+    last_response=$(tac "$transcript_path" | while read -r line; do
+      role=$(echo "$line" | jq -r '.role // ""' 2>/dev/null)
+      if [ "$role" = "assistant" ]; then
+        # Extract the content field - it may be a string or array
+        content=$(echo "$line" | jq -r '
+          if .content | type == "array" then
+            [.content[] | select(.type == "text") | .text] | join("\n\n")
+          elif .content | type == "string" then
+            .content
+          else
+            ""
+          end
+        ' 2>/dev/null)
+
+        if [ -n "$content" ] && [ "$content" != "null" ] && [ "$content" != "[]" ]; then
+          echo "$content"
+          break
+        fi
+      fi
+    done)
+
+    # Send the response to Telegram if we found one
+    if [ -n "$last_response" ] && [ "$last_response" != "null" ] && [ "$last_response" != "" ]; then
+      # Check if this is a todo list update
+      is_todo_update="false"
+      if echo "$last_response" | grep -q "📋.*Todo List"; then
+        is_todo_update="true"
+        # For todo updates, send as-is without the Claude header
+        send_or_edit_telegram "$last_response" "$is_todo_update" >/dev/null 2>&1
+      else
+        # For regular messages, prepend a header to indicate this is Claude's response
+        send_or_edit_telegram "💬 *Claude:*\n\n$last_response" "false" >/dev/null 2>&1
+      fi
+    fi
+  fi
 fi
 
 # AFK mode is active - Check if there are pending Telegram messages

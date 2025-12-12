@@ -107,8 +107,9 @@ send_telegram_message() {
     -H "Content-Type: application/json" \
     -d "$json_payload" 2>&1)
 
-  # Check if successful
+  # Check if successful and output response
   if echo "$response" | jq -e '.ok == true' >/dev/null 2>&1; then
+    echo "$response"
     return 0
   else
     # Log error but don't fail the hook

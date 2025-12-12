@@ -684,6 +684,13 @@ async function disableAfkMode() {
     saveAfkState(false);
     afkStartTime = null;
 
+    // Clear the todo message ID file
+    const todoMessageIdPath = join(dirname(__dirname), ".todo-message-id");
+    if (existsSync(todoMessageIdPath)) {
+      unlinkSync(todoMessageIdPath);
+      log("info", "Cleared todo message ID");
+    }
+
     // Automatically stop the message listener when leaving AFK mode
     if (isListeningForCommands) {
       await stopMessageListener();
@@ -1183,7 +1190,7 @@ function validateBatchNotifications(args) {
 const server = new Server(
   {
     name: "telegram-bot",
-    version: "0.2.13",
+    version: "0.2.15",
   },
   {
     capabilities: {
