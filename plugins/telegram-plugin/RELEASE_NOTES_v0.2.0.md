@@ -279,7 +279,7 @@ None at release time.
 
 ## Credits
 
-**Developed by**: Enrique (e@co8.com)
+**Developed by**: Enrique R. Grullon (e@co8.com)
 **Code Review & Implementation**: Claude Sonnet 4.5
 **Repository**: co8-plugins/telegram-plugin
 
