@@ -40,13 +40,13 @@ Each plugin can be installed independently. Visit the plugin's directory for spe
 1. Clone this repository:
 
 ```bash
-git clone https://github.com/co8/claude-code-plugins.git
+git clone https://github.com/co8/cc-plugins.git
 ```
 
 2. Navigate to the desired plugin:
 
 ```bash
-cd claude-code-plugins/plugins/<plugin-name>
+cd cc-plugins/plugins/<plugin-name>
 ```
 
 3. Follow the plugin-specific installation instructions in its README.md
@@ -102,7 +102,7 @@ This marketplace repository is licensed under MIT License. Individual plugins ma
 ## 🔗 Links
 
 - [Claude Code Documentation](https://claude.ai/claude-code)
-- [Report Issues](https://github.com/co8/claude-code-plugins/issues)
+- [Report Issues](https://github.com/co8/cc-plugins/issues)
 - [co8 Website](https://co8.com)
 
 ## 📬 Contact

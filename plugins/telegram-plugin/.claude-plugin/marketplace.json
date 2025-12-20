@@ -11,7 +11,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/co8/claude-code-plugins"
+    "url": "https://github.com/co8/cc-plugins"
   },
   "keywords": [
     "telegram",

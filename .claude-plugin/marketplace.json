@@ -8,8 +8,8 @@
   "metadata": {
     "description": "Claude Code plugins",
     "version": "1.0.0",
-    "homepage": "https://github.com/co8/claude-code-plugins",
-    "repository": "https://github.com/co8/claude-code-plugins"
+    "homepage": "https://github.com/co8/cc-plugins",
+    "repository": "https://github.com/co8/cc-plugins"
   },
   "plugins": [
     {
@@ -30,8 +30,8 @@
         "automation",
         "workflow"
       ],
-      "repository": "https://github.com/co8/claude-code-plugins",
-      "homepage": "https://github.com/co8/claude-code-plugins/tree/main/plugins/telegram-plugin"
+      "repository": "https://github.com/co8/cc-plugins",
+      "homepage": "https://github.com/co8/cc-plugins/tree/main/plugins/telegram-plugin"
     }
   ]
 }
