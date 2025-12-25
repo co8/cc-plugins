@@ -1,23 +1,25 @@
-# CC-Plugins Improvement Plans
+# CC-Plugins Documentation
 **Quick Reference Guide**
 
 ## Overview
 
-This repository now contains comprehensive improvement plans for the cc-plugins ecosystem. This guide helps you navigate the documentation and understand what's available.
+This directory contains comprehensive improvement plans for the cc-plugins ecosystem. This guide helps you navigate the documentation and understand what's available.
 
 ---
 
 ## 📚 Documentation Structure
 
-### 1. [MASTER_ROADMAP.md](./MASTER_ROADMAP.md)
-**12-Month Strategic Plan**
+### Ecosystem Plans (`docs/plans/`)
+
+#### 1. [ROADMAP.md](./plans/ROADMAP.md)
+**Progressive Roadmap**
 
 Your starting point! This document ties everything together into a cohesive roadmap.
 
 **Contents:**
 - Vision and progressive goals
-- Step-by-step breakdown
-- Phase milestones with quality gates
+- Step-by-step breakdown (12 steps across 4 phases)
+- Quality gates and success criteria
 - Resource allocation
 - Risk management
 - Success metrics
@@ -26,7 +28,50 @@ Your starting point! This document ties everything together into a cohesive road
 
 ---
 
-### 2. [SECURITY_AUDIT.md](./SECURITY_AUDIT.md)
+#### 2. [MARKETPLACE_FEATURES.md](./plans/MARKETPLACE_FEATURES.md)
+**Marketplace & Ecosystem Features**
+
+Proposals for marketplace, registry, and ecosystem infrastructure.
+
+**Contents:**
+- Centralized Plugin Registry
+- Plugin Update System
+- Plugin Dependency Management
+- Plugin Marketplace Web UI
+- Plugin Analytics & Telemetry
+- Plugin Debugger
+- Shared Plugin Library
+- GitHub Actions Plugin
+- Slack Integration Plugin
+
+**Total:** 11 features, ~89 hours estimated effort
+
+**Best for:** Planning marketplace and ecosystem features
+
+---
+
+#### 3. [PLUGIN_TEMPLATES.md](./plans/PLUGIN_TEMPLATES.md)
+**Plugin Template System**
+
+Complete template system for rapid plugin development.
+
+**Contents:**
+- Base plugin template structure
+- Plugin generator CLI tool
+- 4 template categories (full, MCP-only, hooks-only, integration)
+- Reusable components library
+- Testing templates
+- Documentation templates
+
+**Effort:** ~40 hours
+
+**Best for:** Plugin developers and contributors
+
+---
+
+### Telegram Plugin Plans (`plugins/telegram-plugin/docs/plans/`)
+
+#### 4. [SECURITY_AUDIT.md](../plugins/telegram-plugin/docs/plans/SECURITY_AUDIT.md)
 **Security Analysis & Recommendations**
 
 Comprehensive security audit with actionable recommendations.
@@ -49,7 +94,7 @@ Comprehensive security audit with actionable recommendations.
 
 ---
 
-### 3. [EFFICIENCY_OPTIMIZATION_PLAN.md](./EFFICIENCY_OPTIMIZATION_PLAN.md)
+#### 5. [OPTIMIZATIONS.md](../plugins/telegram-plugin/docs/plans/OPTIMIZATIONS.md)
 **Performance & Resource Optimization**
 
 15 optimization opportunities to improve speed and reduce resource usage.
@@ -72,68 +117,21 @@ Comprehensive security audit with actionable recommendations.
 
 ---
 
-### 4. [PLUGIN_TEMPLATE_SYSTEM.md](./PLUGIN_TEMPLATE_SYSTEM.md)
-**Templates & Scaffolding**
+#### 6. TELEGRAM_FEATURES.md *(Coming Soon)*
+**Telegram Plugin Enhancements**
 
-Complete template system for rapid plugin development.
+Future enhancements specific to telegram-plugin:
+- Multi-Bot Support
+- Message Persistence
+- Webhook Mode
+- Rich Media Support
+- Voice Message Transcription
+- Telegram Mini App
+- Group Chat Support
+- Scheduled Notifications
+- Custom Notification Rules
 
-**Contents:**
-- Base plugin template structure
-- Plugin generator CLI tool
-- 4 template categories (full, MCP-only, hooks-only, integration)
-- Reusable components library
-- Testing templates
-- Documentation templates
-- Estimated effort: 40 hours
-
-**Key Features:**
-- Create new plugin in <30 minutes (vs 4 hours)
-- Automatic configuration
-- Best practices built-in
-- Shared utilities
-
-**Best for:** Plugin developers and contributors
-
----
-
-### 5. [NEW_FEATURES_PROPOSAL.md](./NEW_FEATURES_PROPOSAL.md)
-**20 Feature Proposals with Implementation Plans**
-
-Detailed proposals for new features across the ecosystem.
-
-**Categories:**
-
-**Marketplace & Plugin System (5 features):**
-1. Centralized Plugin Registry
-2. Plugin Update System
-3. Plugin Dependency Management
-4. Plugin Marketplace Web UI
-5. Plugin Analytics & Telemetry
-
-**Telegram Plugin Enhancements (9 features):**
-6. Multi-Bot Support
-7. Message Persistence
-8. Webhook Mode
-9. Rich Media Support
-10. Voice Message Transcription
-11. Telegram Mini App
-12. Group Chat Support
-13. Scheduled Notifications
-14. Custom Notification Rules
-
-**Developer Experience (4 features):**
-15. Plugin Debugger
-16. Visual Hook Editor
-17. Plugin Playground
-18. Shared Plugin Library
-
-**Integration & Ecosystem (2 features):**
-19. GitHub Actions Plugin
-20. Slack Integration Plugin
-
-**Total Estimated Effort:** ~150 hours
-
-**Best for:** Feature planning and product roadmap
+**Total:** 9 features, ~61 hours estimated effort
 
 ---
 
@@ -142,23 +140,26 @@ Detailed proposals for new features across the ecosystem.
 ### I want to...
 
 **...understand the overall plan**
-→ Start with [MASTER_ROADMAP.md](./MASTER_ROADMAP.md)
+→ Start with [ROADMAP.md](./plans/ROADMAP.md)
 
-**...improve security**
-→ Read [SECURITY_AUDIT.md](./SECURITY_AUDIT.md)
+**...improve security (telegram-plugin)**
+→ Read [SECURITY_AUDIT.md](../plugins/telegram-plugin/docs/plans/SECURITY_AUDIT.md)
 → Implement high-priority fixes first (12.5 hours)
 
-**...make it faster**
-→ Check [EFFICIENCY_OPTIMIZATION_PLAN.md](./EFFICIENCY_OPTIMIZATION_PLAN.md)
+**...make it faster (telegram-plugin)**
+→ Check [OPTIMIZATIONS.md](../plugins/telegram-plugin/docs/plans/OPTIMIZATIONS.md)
 → Start with Phase 1: Quick Wins (1.5 hours)
 
 **...create a new plugin**
-→ Review [PLUGIN_TEMPLATE_SYSTEM.md](./PLUGIN_TEMPLATE_SYSTEM.md)
+→ Review [PLUGIN_TEMPLATES.md](./plans/PLUGIN_TEMPLATES.md)
 → Build the plugin generator CLI first (8 hours)
 
-**...add new features**
-→ Browse [NEW_FEATURES_PROPOSAL.md](./NEW_FEATURES_PROPOSAL.md)
+**...add marketplace features**
+→ Browse [MARKETPLACE_FEATURES.md](./plans/MARKETPLACE_FEATURES.md)
 → Pick features based on priority and effort
+
+**...enhance telegram-plugin**
+→ See telegram-plugin docs: `plugins/telegram-plugin/docs/plans/`
 
 **...contribute**
 → Read all documents

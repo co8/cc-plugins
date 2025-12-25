@@ -1,10 +1,10 @@
-# New Features Proposal
+# Marketplace & Ecosystem Features
 **CC-Plugins Repository**
 **Date:** December 2024
 
 ## Overview
 
-This document proposes 20 new features across the plugin ecosystem and telegram-plugin specifically, with detailed implementation plans, effort estimates, and priority rankings.
+This document proposes features for the plugin marketplace, registry, and ecosystem infrastructure. For telegram-plugin-specific features, see `plugins/telegram-plugin/docs/plans/TELEGRAM_FEATURES.md`.
 
 ---
 
@@ -17,26 +17,15 @@ This document proposes 20 new features across the plugin ecosystem and telegram-
 4. [Plugin Marketplace Web UI](#4-plugin-marketplace-web-ui)
 5. [Plugin Analytics & Telemetry](#5-plugin-analytics--telemetry)
 
-### Telegram Plugin Enhancements
-6. [Multi-Bot Support](#6-multi-bot-support)
-7. [Message Persistence](#7-message-persistence)
-8. [Webhook Mode](#8-webhook-mode)
-9. [Rich Media Support](#9-rich-media-support)
-10. [Voice Message Transcription](#10-voice-message-transcription)
-11. [Telegram Mini App](#11-telegram-mini-app)
-12. [Group Chat Support](#12-group-chat-support)
-13. [Scheduled Notifications](#13-scheduled-notifications)
-14. [Custom Notification Rules](#14-custom-notification-rules)
-
 ### Developer Experience
-15. [Plugin Debugger](#15-plugin-debugger)
-16. [Visual Hook Editor](#16-visual-hook-editor)
-17. [Plugin Playground](#17-plugin-playground)
-18. [Shared Plugin Library](#18-shared-plugin-library)
+6. [Plugin Debugger](#6-plugin-debugger)
+7. [Visual Hook Editor](#7-visual-hook-editor)
+8. [Plugin Playground](#8-plugin-playground)
+9. [Shared Plugin Library](#9-shared-plugin-library)
 
-### Integration & Ecosystem
-19. [GitHub Actions Plugin](#19-github-actions-plugin)
-20. [Slack Integration Plugin](#20-slack-integration-plugin)
+### Integration Plugins
+10. [GitHub Actions Plugin](#10-github-actions-plugin)
+11. [Slack Integration Plugin](#11-slack-integration-plugin)
 
 ---
 
@@ -293,7 +282,7 @@ if (updates.available) {
 EOF
 ```
 
-#### Auto-Update Configuration
+**Auto-Update Configuration:**
 
 ```yaml
 # .claude/settings.yml
@@ -561,607 +550,9 @@ telemetry:
 
 ---
 
-## Telegram Plugin Enhancements
-
-### 6. Multi-Bot Support
-
-**Priority:** 🟡 MEDIUM
-**Effort:** 4 hours
-**Impact:** Multiple users/bots per project
-
-#### Description
-Support multiple Telegram bots for different purposes (personal, team, staging).
-
-#### Implementation
-
-**Config:**
-```yaml
----
-bots:
-  personal:
-    bot_token: "123:ABC..."
-    chat_id: "987654321"
-    enabled: true
-
-  team:
-    bot_token: "456:DEF..."
-    chat_id: "-100123456789"  # Group chat
-    enabled: true
-
-  staging:
-    bot_token: "789:GHI..."
-    chat_id: "111222333"
-    enabled: false
-
-default_bot: "personal"
-
-# Route notifications to different bots
-routing:
-  errors: ["personal", "team"]
-  approvals: ["personal"]
-  completions: ["team"]
----
-```
-
-**Code Changes:**
-
-```javascript
-// telegram-bot.js
-const bots = new Map();
-
-for (const [name, config] of Object.entries(configData.bots)) {
-  if (config.enabled) {
-    bots.set(name, new TelegramClient(config));
-  }
-}
-
-// Route messages
-async function sendMessage(text, priority, botNames = [defaultBot]) {
-  for (const botName of botNames) {
-    const bot = bots.get(botName);
-    await bot.sendMessage(text, priority);
-  }
-}
-```
-
----
-
-### 7. Message Persistence
-
-**Priority:** 🟡 MEDIUM
-**Effort:** 3 hours
-**Impact:** History across restarts
-
-#### Description
-Persist messages and state to database for history and recovery.
-
-#### Implementation
-
-**Database Schema (SQLite):**
-
-```sql
-CREATE TABLE messages (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  message_id TEXT NOT NULL,
-  chat_id TEXT NOT NULL,
-  text TEXT,
-  priority TEXT,
-  sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  edited_at DATETIME
-);
-
-CREATE TABLE approvals (
-  id TEXT PRIMARY KEY,
-  question TEXT NOT NULL,
-  options JSON NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  expires_at DATETIME,
-  response JSON,
-  responded_at DATETIME
-);
-
-CREATE INDEX idx_messages_chat_id ON messages(chat_id);
-CREATE INDEX idx_approvals_expires_at ON approvals(expires_at);
-```
-
-**Code:**
-
-```javascript
-import Database from 'better-sqlite3';
-
-const db = new Database('~/.claude/telegram-plugin.db');
-
-export function saveMessage(messageId, chatId, text, priority) {
-  db.prepare(`
-    INSERT INTO messages (message_id, chat_id, text, priority)
-    VALUES (?, ?, ?, ?)
-  `).run(messageId, chatId, text, priority);
-}
-
-export function getMessageHistory(chatId, limit = 100) {
-  return db.prepare(`
-    SELECT * FROM messages
-    WHERE chat_id = ?
-    ORDER BY sent_at DESC
-    LIMIT ?
-  `).all(chatId, limit);
-}
-
-export function saveApproval(approvalId, question, options, expiresAt) {
-  db.prepare(`
-    INSERT INTO approvals (id, question, options, expires_at)
-    VALUES (?, ?, ?, ?)
-  `).run(approvalId, question, JSON.stringify(options), expiresAt);
-}
-```
-
-#### New MCP Tool: `get_message_history`
-
-```javascript
-{
-  name: "get_message_history",
-  description: "Retrieve message history from Telegram",
-  inputSchema: {
-    type: "object",
-    properties: {
-      limit: { type: "number", default: 50 },
-      before: { type: "string", description: "ISO date" }
-    }
-  }
-}
-```
-
----
-
-### 8. Webhook Mode
-
-**Priority:** 🟡 MEDIUM
-**Effort:** 5 hours
-**Impact:** Lower latency, less resource usage
-
-#### Description
-Support webhooks instead of polling for better performance.
-
-#### Implementation
-
-**Configuration:**
-```yaml
-telegram_mode: "webhook"  # or "polling"
-webhook_url: "https://yourserver.com/telegram/webhook"
-webhook_port: 3000
-```
-
-**Webhook Server:**
-
-```javascript
-import express from 'express';
-import crypto from 'crypto';
-
-const app = express();
-
-app.post('/telegram/webhook', express.json(), (req, res) => {
-  // Verify request from Telegram
-  const hash = req.headers['x-telegram-bot-api-secret-token'];
-  if (hash !== config.webhook_secret) {
-    return res.status(401).send('Unauthorized');
-  }
-
-  // Process update
-  const update = req.body;
-  handleTelegramUpdate(update);
-
-  res.sendStatus(200);
-});
-
-app.listen(config.webhook_port, () => {
-  console.log(`Webhook server listening on port ${config.webhook_port}`);
-});
-
-// Set webhook
-await bot.setWebHook(`${config.webhook_url}`, {
-  secret_token: config.webhook_secret
-});
-```
-
-**Benefits:**
-- Instant updates (no polling delay)
-- Lower CPU usage
-- Scales better
-
----
-
-### 9. Rich Media Support
-
-**Priority:** 🔵 LOW
-**Effort:** 6 hours
-**Impact:** Better UX, visualizations
-
-#### Description
-Support sending images, charts, code screenshots, and files.
-
-#### Features
-- Send images/charts
-- Send code as syntax-highlighted images
-- Send files (logs, reports)
-- Send videos/GIFs
-
-#### Implementation
-
-**New MCP Tools:**
-
-```javascript
-{
-  name: "send_image",
-  description: "Send an image to Telegram",
-  inputSchema: {
-    type: "object",
-    properties: {
-      image_path: { type: "string" },
-      caption: { type: "string" }
-    },
-    required: ["image_path"]
-  }
-}
-
-{
-  name: "send_file",
-  description: "Send a file to Telegram",
-  inputSchema: {
-    type: "object",
-    properties: {
-      file_path: { type: "string" },
-      caption: { type: "string" }
-    },
-    required: ["file_path"]
-  }
-}
-
-{
-  name: "send_code_screenshot",
-  description: "Send code as a syntax-highlighted image",
-  inputSchema: {
-    type: "object",
-    properties: {
-      code: { type: "string" },
-      language: { type: "string" },
-      theme: { type: "string", default: "dracula" }
-    },
-    required: ["code"]
-  }
-}
-```
-
-**Code Screenshot Generation:**
-
-```javascript
-import { codeToImage } from 'carbon-api';
-
-async function sendCodeScreenshot(code, language, theme) {
-  // Generate image using carbon.now.sh API
-  const image = await codeToImage({
-    code,
-    language,
-    theme,
-    backgroundColor: '#1e1e1e'
-  });
-
-  // Send to Telegram
-  await bot.sendPhoto(chatId, image, {
-    caption: `Code snippet (${language})`
-  });
-}
-```
-
----
-
-### 10. Voice Message Transcription
-
-**Priority:** 🔵 LOW
-**Effort:** 4 hours
-**Impact:** Voice-based commands
-
-#### Description
-Transcribe voice messages from Telegram and process as text commands.
-
-#### Implementation
-
-```javascript
-bot.on('voice', async (msg) => {
-  const voiceFileId = msg.voice.file_id;
-
-  // Download voice message
-  const file = await bot.getFile(voiceFileId);
-  const voicePath = await bot.downloadFile(file.file_id, '/tmp');
-
-  // Transcribe using OpenAI Whisper
-  const transcription = await transcribeAudio(voicePath);
-
-  log('info', 'Voice message transcribed', { text: transcription });
-
-  // Process as text command
-  processCommand(transcription, msg.chat.id);
-});
-
-async function transcribeAudio(audioPath) {
-  // Using OpenAI Whisper API
-  const form = new FormData();
-  form.append('file', fs.createReadStream(audioPath));
-  form.append('model', 'whisper-1');
-
-  const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-    },
-    body: form
-  });
-
-  const { text } = await response.json();
-  return text;
-}
-```
-
-**Configuration:**
-```yaml
-voice_messages:
-  enabled: true
-  transcription_service: "whisper"  # whisper, google, assemblyai
-  api_key: "..."
-```
-
----
-
-### 11. Telegram Mini App
-
-**Priority:** 🔵 LOW
-**Effort:** 12 hours
-**Impact:** Rich interactive UI
-
-#### Description
-Create a Telegram Mini App for advanced interactions (dashboard, logs, controls).
-
-#### Features
-- Real-time dashboard
-- Browse message history
-- View/filter logs
-- Interactive approvals
-- Plugin settings
-
-#### Tech Stack
-- **Frontend:** React + Telegram WebApp SDK
-- **Backend:** Same MCP server
-- **State:** Redux/Zustand
-
-#### Implementation
-
-**Mini App Entry Point:**
-
-```javascript
-// telegram-mini-app/src/App.tsx
-import { WebApp } from '@twa-dev/sdk';
-import { Dashboard } from './components/Dashboard';
-
-export function App() {
-  useEffect(() => {
-    WebApp.ready();
-    WebApp.expand();
-  }, []);
-
-  return (
-    <div className="app">
-      <Dashboard />
-    </div>
-  );
-}
-```
-
-**Dashboard Component:**
-
-```typescript
-export function Dashboard() {
-  const [stats, setStats] = useState(null);
-
-  useEffect(() => {
-    // Fetch stats from MCP server
-    fetch('/api/stats').then(res => res.json()).then(setStats);
-  }, []);
-
-  return (
-    <div>
-      <h1>Claude Code Status</h1>
-
-      <div className="stats-grid">
-        <Stat label="Tasks Completed" value={stats.tasksCompleted} />
-        <Stat label="Errors Today" value={stats.errors} />
-        <Stat label="Uptime" value={stats.uptime} />
-      </div>
-
-      <MessageList messages={stats.recentMessages} />
-
-      <button onClick={sendTestNotification}>
-        Send Test Notification
-      </button>
-    </div>
-  );
-}
-```
-
----
-
-### 12. Group Chat Support
-
-**Priority:** 🟡 MEDIUM
-**Effort:** 3 hours
-**Impact:** Team collaboration
-
-#### Description
-Support sending notifications to Telegram group chats.
-
-#### Features
-- Group notifications
-- @mention specific users
-- Thread support (Telegram topics)
-- Permission controls
-
-#### Implementation
-
-**Config:**
-```yaml
-chat_id: "-100123456789"  # Group chat ID (negative)
-
-group_settings:
-  mention_on_errors: ["@user1", "@user2"]
-  mention_on_approvals: ["@user1"]
-  use_topics: true
-  default_topic_id: 123
-```
-
-**Code:**
-
-```javascript
-async function sendGroupMessage(text, mentions = []) {
-  let message = text;
-
-  // Add mentions
-  if (mentions.length > 0) {
-    message = `${mentions.join(' ')} ${text}`;
-  }
-
-  await bot.sendMessage(config.chat_id, message, {
-    parse_mode: 'HTML',
-    message_thread_id: config.group_settings.default_topic_id
-  });
-}
-```
-
----
-
-### 13. Scheduled Notifications
-
-**Priority:** 🔵 LOW
-**Effort:** 3 hours
-**Impact:** Periodic summaries
-
-#### Description
-Send scheduled reports and summaries.
-
-#### Features
-- Daily/weekly summaries
-- Scheduled reminders
-- Custom schedules (cron syntax)
-
-#### Implementation
-
-**Config:**
-```yaml
-scheduled_notifications:
-  - name: "daily_summary"
-    schedule: "0 18 * * *"  # 6 PM daily
-    type: "summary"
-
-  - name: "weekly_report"
-    schedule: "0 9 * * 1"  # Monday 9 AM
-    type: "weekly_stats"
-```
-
-**Code:**
-
-```javascript
-import cron from 'node-cron';
-
-for (const notif of config.scheduled_notifications) {
-  cron.schedule(notif.schedule, async () => {
-    const message = await generateScheduledMessage(notif.type);
-    await bot.sendMessage(config.chat_id, message);
-  });
-}
-
-async function generateScheduledMessage(type) {
-  switch (type) {
-    case 'summary':
-      const stats = getStats();
-      return `📊 Daily Summary\n\nTasks: ${stats.tasks}\nErrors: ${stats.errors}`;
-
-    case 'weekly_stats':
-      // ...
-  }
-}
-```
-
----
-
-### 14. Custom Notification Rules
-
-**Priority:** 🟡 MEDIUM
-**Effort:** 4 hours
-**Impact:** Fine-grained control
-
-#### Description
-Powerful rule engine for notification customization.
-
-#### Implementation
-
-**Config:**
-```yaml
-notification_rules:
-  - name: "critical_errors"
-    condition: "error.level === 'critical'"
-    actions:
-      - send_message:
-          priority: "high"
-          prefix: "🚨 CRITICAL: "
-      - mention: ["@oncall"]
-
-  - name: "long_tasks"
-    condition: "task.duration > 300000"  # 5 minutes
-    actions:
-      - send_message:
-          text: "Task took longer than expected: {{task.name}}"
-
-  - name: "working_hours_only"
-    condition: "hour >= 9 && hour <= 17"
-    actions:
-      - send_message
-    else:
-      - log_only
-```
-
-**Rule Engine:**
-
-```javascript
-import { VM } from 'vm2';
-
-class RuleEngine {
-  constructor(rules) {
-    this.rules = rules;
-  }
-
-  evaluate(event, context) {
-    for (const rule of this.rules) {
-      const vm = new VM({ sandbox: context });
-      const matches = vm.run(`(${rule.condition})`);
-
-      if (matches) {
-        this.executeActions(rule.actions, context);
-      } else if (rule.else) {
-        this.executeActions(rule.else, context);
-      }
-    }
-  }
-
-  executeActions(actions, context) {
-    for (const action of actions) {
-      // Execute action...
-    }
-  }
-}
-```
-
----
-
 ## Developer Experience
 
-### 15. Plugin Debugger
+### 6. Plugin Debugger
 
 **Priority:** 🟡 MEDIUM
 **Effort:** 8 hours
@@ -1229,7 +620,7 @@ export function Debugger() {
 
 ---
 
-### 16. Visual Hook Editor
+### 7. Visual Hook Editor
 
 **Priority:** 🔵 LOW
 **Effort:** 12 hours
@@ -1248,7 +639,7 @@ Visual editor for creating hooks without writing code.
 
 ---
 
-### 17. Plugin Playground
+### 8. Plugin Playground
 
 **Priority:** 🔵 LOW
 **Effort:** 6 hours
@@ -1265,7 +656,7 @@ Web-based playground to test plugins without installing.
 
 ---
 
-### 18. Shared Plugin Library
+### 9. Shared Plugin Library
 
 **Priority:** 🟡 MEDIUM
 **Effort:** 4 hours
@@ -1298,9 +689,9 @@ const limiter = new RateLimiter(30);
 
 ---
 
-## Integration & Ecosystem
+## Integration Plugins
 
-### 19. GitHub Actions Plugin
+### 10. GitHub Actions Plugin
 
 **Priority:** 🟡 MEDIUM
 **Effort:** 8 hours
@@ -1323,7 +714,7 @@ const limiter = new RateLimiter(30);
 
 ---
 
-### 20. Slack Integration Plugin
+### 11. Slack Integration Plugin
 
 **Priority:** 🟡 MEDIUM
 **Effort:** 8 hours
@@ -1348,30 +739,26 @@ const limiter = new RateLimiter(30);
 
 ## Implementation Roadmap
 
-### Phase 1 (Months 1-2): Foundation
+### Phase 1: Foundation
 - Centralized Plugin Registry
 - Plugin Update System
-- Plugin Template System
 - Shared Plugin Library
 
-### Phase 2 (Months 3-4): Telegram Enhancements
-- Multi-Bot Support
-- Message Persistence
-- Webhook Mode
-- Group Chat Support
-
-### Phase 3 (Months 5-6): Developer Tools
-- Plugin Debugger
-- Custom Notification Rules
-- Rich Media Support
-
-### Phase 4 (Months 7-8): Ecosystem
+### Phase 2: Marketplace
 - Plugin Marketplace Web UI
+- Plugin Dependency Management
+- Plugin Analytics
+
+### Phase 3: Developer Tools
+- Plugin Debugger
+- Plugin Playground
+- Visual Hook Editor
+
+### Phase 4: Integrations
 - GitHub Actions Plugin
 - Slack Integration Plugin
-- Telegram Mini App
 
-**Total Estimated Effort:** ~150 hours over 8 months
+**Total Estimated Effort:** ~89 hours
 
 ---
 
@@ -1381,20 +768,19 @@ const limiter = new RateLimiter(30);
 |---------|----------|--------|--------|-----|
 | Plugin Registry | 🔥 HIGH | 8h | High | ⭐⭐⭐⭐⭐ |
 | Plugin Updates | 🔥 HIGH | 5h | High | ⭐⭐⭐⭐⭐ |
-| Multi-Bot Support | 🟡 MED | 4h | Med | ⭐⭐⭐⭐ |
-| Webhook Mode | 🟡 MED | 5h | Med | ⭐⭐⭐⭐ |
-| Message Persistence | 🟡 MED | 3h | Med | ⭐⭐⭐ |
+| Shared Library | 🟡 MED | 4h | Med | ⭐⭐⭐⭐ |
 | Plugin Debugger | 🟡 MED | 8h | High | ⭐⭐⭐⭐ |
-| Rich Media | 🔵 LOW | 6h | Low | ⭐⭐ |
-| Voice Transcription | 🔵 LOW | 4h | Low | ⭐⭐ |
-| Telegram Mini App | 🔵 LOW | 12h | Med | ⭐⭐⭐ |
+| Marketplace UI | 🟡 MED | 16h | High | ⭐⭐⭐⭐ |
+| Dependency Mgmt | 🟡 MED | 6h | Med | ⭐⭐⭐ |
+| GitHub Plugin | 🟡 MED | 8h | Med | ⭐⭐⭐ |
+| Slack Plugin | 🟡 MED | 8h | Med | ⭐⭐⭐ |
 
 ---
 
 ## Success Metrics
 
-- **Plugin Adoption:** 10+ plugins in marketplace (6 months)
-- **Active Users:** 100+ installations (6 months)
+- **Plugin Adoption:** 10+ plugins in marketplace
+- **Active Users:** 100+ installations
 - **Community Contributions:** 5+ external contributors
 - **Update Rate:** 90% of users on latest version
 - **Developer Satisfaction:** ⭐⭐⭐⭐⭐ (4.5+/5)

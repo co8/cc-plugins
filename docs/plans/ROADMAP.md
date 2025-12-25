@@ -777,25 +777,30 @@ Every step and phase must pass these quality gates before proceeding:
 
 This master roadmap consolidates the following detailed plans:
 
-1. **[SECURITY_AUDIT.md](./SECURITY_AUDIT.md)**
-   - Security vulnerabilities and fixes
-   - Best practices checklist
-   - Implementation priorities
+### Ecosystem Plans
 
-2. **[EFFICIENCY_OPTIMIZATION_PLAN.md](./EFFICIENCY_OPTIMIZATION_PLAN.md)**
-   - 15 optimization opportunities
-   - Performance metrics
-   - Implementation roadmap
+1. **[MARKETPLACE_FEATURES.md](./MARKETPLACE_FEATURES.md)**
+   - 11 marketplace and ecosystem features
+   - Plugin registry, updates, dependencies
+   - Developer tools (debugger, shared library)
+   - Integration plugins (GitHub, Slack)
 
-3. **[PLUGIN_TEMPLATE_SYSTEM.md](./PLUGIN_TEMPLATE_SYSTEM.md)**
+2. **[PLUGIN_TEMPLATES.md](./PLUGIN_TEMPLATES.md)**
    - Template structure
    - Plugin generator
    - Reusable components
 
-4. **[NEW_FEATURES_PROPOSAL.md](./NEW_FEATURES_PROPOSAL.md)**
-   - 20 feature proposals
-   - Implementation plans
-   - Effort estimates
+### Telegram Plugin Plans
+
+3. **[SECURITY_AUDIT.md](../../plugins/telegram-plugin/docs/plans/SECURITY_AUDIT.md)**
+   - Security vulnerabilities and fixes
+   - Best practices checklist
+   - Implementation priorities
+
+4. **[OPTIMIZATIONS.md](../../plugins/telegram-plugin/docs/plans/OPTIMIZATIONS.md)**
+   - 15 optimization opportunities
+   - Performance metrics
+   - Implementation roadmap
 
 ---
 
@@ -810,15 +815,15 @@ This master roadmap consolidates the following detailed plans:
    - Configure test coverage tracking
 
 2. **Begin Step 1: Security & Quick Wins**
-   - Implement token masking (SECURITY_AUDIT.md#H1)
-   - Add rate limiting config (SECURITY_AUDIT.md#H2)
-   - Fix config file permissions (SECURITY_AUDIT.md#M2)
+   - Implement token masking (See [telegram SECURITY_AUDIT.md](../../plugins/telegram-plugin/docs/plans/SECURITY_AUDIT.md#h1))
+   - Add rate limiting config (See [telegram SECURITY_AUDIT.md](../../plugins/telegram-plugin/docs/plans/SECURITY_AUDIT.md#h2))
+   - Fix config file permissions (See [telegram SECURITY_AUDIT.md](../../plugins/telegram-plugin/docs/plans/SECURITY_AUDIT.md#m2))
    - **Gate:** All security tests passing
 
 3. **Continue to Step 2: Performance & Templates**
-   - Optimize message batcher
+   - Optimize message batcher (See [telegram OPTIMIZATIONS.md](../../plugins/telegram-plugin/docs/plans/OPTIMIZATIONS.md))
    - Improve approval cleanup
-   - Create plugin templates
+   - Create plugin templates (See [PLUGIN_TEMPLATES.md](./PLUGIN_TEMPLATES.md))
    - **Gate:** Performance benchmarks met
 
 ### Phase Progression
