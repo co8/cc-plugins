@@ -1,0 +1,26 @@
+{
+  "name": "cc-plugins",
+  "version": "0.3.1",
+  "description": "Plugin ecosystem for Claude Code",
+  "type": "module",
+  "scripts": {
+    "create-plugin": "node scripts/create-plugin.js",
+    "test": "echo \"Run tests in individual plugin directories\"",
+    "test:templates": "node scripts/test-templates.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/co8/cc-plugins"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "plugins",
+    "mcp",
+    "ai",
+    "automation"
+  ],
+  "author": "Enrique R Grullon",
+  "license": "MIT",
+  "devDependencies": {}
+}
