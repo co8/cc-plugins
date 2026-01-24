@@ -12,7 +12,8 @@ Multi-agent orchestration framework for complex software development projects. C
 | Command | Purpose |
 |---------|---------|
 | `/swarm <project-name>` | Initialize new project with full planning phase |
-| `/swarm` | Continue existing project or start new one |
+| `/swarm` | Continue existing project, convert a plan, or start new |
+| `/swarm --from-plan=<name>` | Convert a specific plan file to swarm project |
 
 ---
 
@@ -31,9 +32,13 @@ Smart project detection and continuation.
   ├─► Check docs/projects/
   │   └─► List recent projects by modified date
   │
+  ├─► Check ~/.claude/plans/
+  │   └─► List recent plans available for conversion
+  │
   └─► Decision:
       ├─► Project identified → "Continue <project>? [Y/n]"
       ├─► Multiple found → "Select project or create new"
+      ├─► Plans available → "Convert plan to project?"
       └─► None found → "Create new project? Suggested: <n>"
 ```
 
@@ -51,16 +56,26 @@ Smart project detection and continuation.
    [1-3] Continue project | [n] New project | [q] Cancel
    ```
 
-3. **New project suggestion**: If no projects found or user chooses new, offer 3 random names from the word pool:
+3. **Recent plans**: Check `~/.claude/plans/` for implementation plans that can be converted to swarm projects:
+   ```
+   Recent plans available for conversion:
+   1. scalable-forging-lovelace (3h ago) - "RailwayCard Enhancement Plan"
+   2. temporal-sleeping-ladybug (1d ago) - "Centralized Environment & Domain Configuration"
+   3. optimized-crunching-fountain (2d ago) - "API Rate Limiting Implementation"
+
+   [1-3] Convert to project | [s] Skip to projects | [n] New project
+   ```
+
+4. **New project suggestion**: If no projects found or user chooses new, offer 3 random names from the word pool:
    ```
    No active projects found.
    Create new project?
-   
+
    Suggested names:
      1. ember
-     2. prism  
+     2. prism
      3. quill
-   
+
    [1-3] Select | [name] Custom name | [n] Cancel
    ```
 
@@ -79,6 +94,39 @@ malgrat, palafo, tordera, blanes, vilassar, masnou, ocata, matarell, llavaneres,
 gava, vilade, begues, cerve, palleja, corbera, molins, papiol, colbat, esparra,
 piera, masque, gelida, ordal, subirats, lavern, pachs, vila, sitges, garraf,
 olivella, canyelles, cubelles, vilanova, vendrell, calafell, cunit, segur, creixell
+```
+
+### Plan Conversion
+
+When converting a plan from `~/.claude/plans/` to a swarm project:
+
+1. **Parse plan file**: Extract title (first `#` heading), summary, file changes, and implementation steps
+2. **Generate project name**: Use plan filename or suggest from word pool
+3. **Auto-populate documents**:
+   - `PROJECT_PLAN.md` ← Plan title, summary, and goals
+   - `IMPLEMENTATION_PLAN.md` ← File changes, code snippets, verification steps
+   - `AGENT_SWARM_SPEC.md` ← Generate agents from implementation steps (one agent per logical unit of work)
+4. **Review generated spec**: Present the auto-generated agent breakdown for user approval before execution
+
+**Plan file format expected** (from Claude Code plan mode):
+```markdown
+# Plan Title
+
+## Overview/Summary
+Brief description...
+
+## Changes Summary / Files to Modify
+| File | Changes |
+|------|---------|
+| path/to/file.ts | Description of changes |
+
+## Implementation Order / Steps
+1. First step...
+2. Second step...
+
+## Verification
+- [ ] Test step 1
+- [ ] Test step 2
 ```
 
 ### Project Status Detection
@@ -182,6 +230,7 @@ Generate CODE_REVIEW.md with quality metrics, issues found, optimizations applie
 | `--dry-run` | Generate plans only, no execution |
 | `--from-phase=N` | Resume from specific phase |
 | `--agent=N.M` | Run single agent only |
+| `--from-plan=<name>` | Convert a specific plan file to project (e.g., `--from-plan=scalable-forging-lovelace`) |
 
 ---
 
