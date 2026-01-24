@@ -1,0 +1,21 @@
+{
+  "name": "swarm-protocol",
+  "version": "1.0.0",
+  "description": "Multi-agent development orchestration - coordinate parallel workstreams, manage project documentation, and automate milestone commits",
+  "author": {
+    "name": "Enrique R. Grullon",
+    "email": "e@co8.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "swarm",
+    "multi-agent",
+    "orchestration",
+    "parallel",
+    "workflow",
+    "automation",
+    "project-management"
+  ],
+  "repository": "https://github.com/co8/cc-plugins",
+  "homepage": "https://github.com/co8/cc-plugins/tree/main/plugins/swarm-protocol"
+}
