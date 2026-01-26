@@ -1,0 +1,91 @@
+---
+project: {{PROJECT_NAME}}
+version: 1.0.0
+created: {{DATE}}
+---
+
+# {{PROJECT_NAME}}
+
+## Quick Reference
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run test` | Run test suite |
+| `npm run lint` | Run linter |
+| `npm run typecheck` | TypeScript type checking |
+
+## Stack
+
+| Layer | Technology |
+|-------|------------|
+| Framework | {{FRAMEWORK}} |
+| Language | TypeScript |
+| Database | {{DATABASE}} |
+| Styling | {{STYLING}} |
+| Testing | {{TESTING}} |
+
+## Project Structure
+
+```
+src/
+  app/           # Routes and pages
+  components/    # Reusable components
+  lib/           # Utilities and helpers
+  services/      # Business logic
+  types/         # TypeScript definitions
+```
+
+## Development Guidelines
+
+### Code Style
+
+- Use TypeScript strict mode
+- Prefer functional components
+- Use absolute imports (`@/`)
+- Follow ESLint configuration
+
+### Git Workflow
+
+- Feature branches: `feature/<name>`
+- Bug fixes: `fix/<name>`
+- Commit format: `type(scope): description`
+
+### Testing
+
+- Unit tests: `*.test.ts`
+- Integration tests: `*.spec.ts`
+- E2E tests: `e2e/*.spec.ts`
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | Database connection string |
+| `API_KEY` | Yes | API authentication key |
+
+## Key Commands
+
+```bash
+# Development
+npm run dev
+
+# Database
+npm run db:migrate
+npm run db:seed
+npm run db:reset
+
+# Testing
+npm run test
+npm run test:coverage
+npm run test:e2e
+
+# Build
+npm run build
+npm run start
+```
+
+## Notes
+
+- {{NOTES}}

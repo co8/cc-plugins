@@ -1,0 +1,163 @@
+# Implementation Plan: {{PROJECT_NAME}}
+
+## Architecture
+
+{{ARCHITECTURE_DESCRIPTION}}
+
+```
+{{ARCHITECTURE_DIAGRAM}}
+```
+
+## Technology Stack
+
+| Component | Technology | Version |
+|-----------|------------|---------|
+| Runtime | {{RUNTIME}} | {{RUNTIME_VERSION}} |
+| Framework | {{FRAMEWORK}} | {{FRAMEWORK_VERSION}} |
+| Database | {{DATABASE}} | {{DATABASE_VERSION}} |
+| ORM | {{ORM}} | {{ORM_VERSION}} |
+
+## File Changes
+
+| File | Action | Description |
+|------|--------|-------------|
+| `{{FILE_1}}` | Create | {{DESCRIPTION_1}} |
+| `{{FILE_2}}` | Create | {{DESCRIPTION_2}} |
+| `{{FILE_3}}` | Modify | {{DESCRIPTION_3}} |
+| `{{FILE_4}}` | Delete | {{DESCRIPTION_4}} |
+
+## Database Migrations
+
+### Migration: `{{MIGRATION_TIMESTAMP}}_{{MIGRATION_NAME}}.sql`
+
+```sql
+-- Up
+{{MIGRATION_UP_SQL}}
+
+-- Down (rollback)
+{{MIGRATION_DOWN_SQL}}
+```
+
+### Rollback Strategy
+
+{{ROLLBACK_STRATEGY}}
+
+**Steps:**
+1. Stop application servers
+2. Run rollback migration: `npm run db:rollback`
+3. Verify data integrity
+4. Deploy previous version
+5. Restart application servers
+
+## API Endpoints
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/v1/{{RESOURCE}}` | GET | Required | List all {{RESOURCE}} |
+| `/api/v1/{{RESOURCE}}` | POST | Required | Create {{RESOURCE}} |
+| `/api/v1/{{RESOURCE}}/:id` | GET | Required | Get {{RESOURCE}} by ID |
+| `/api/v1/{{RESOURCE}}/:id` | PUT | Required | Update {{RESOURCE}} |
+| `/api/v1/{{RESOURCE}}/:id` | DELETE | Required | Delete {{RESOURCE}} |
+
+### Request/Response Examples
+
+**GET /api/v1/{{RESOURCE}}**
+
+```json
+// Response
+{
+  "data": [],
+  "meta": {
+    "total": 0,
+    "page": 1,
+    "limit": 20
+  }
+}
+```
+
+**POST /api/v1/{{RESOURCE}}**
+
+```json
+// Request
+{{REQUEST_BODY}}
+
+// Response
+{{RESPONSE_BODY}}
+```
+
+## Type Definitions
+
+```typescript
+// {{RESOURCE}}.types.ts
+
+export interface {{TYPE_NAME}} {
+  id: string;
+  {{TYPE_FIELDS}}
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Create{{TYPE_NAME}}Input {
+  {{CREATE_INPUT_FIELDS}}
+}
+
+export interface Update{{TYPE_NAME}}Input {
+  {{UPDATE_INPUT_FIELDS}}
+}
+
+export type {{TYPE_NAME}}Response = {
+  data: {{TYPE_NAME}};
+  error?: never;
+} | {
+  data?: never;
+  error: string;
+};
+```
+
+### Zod Schemas
+
+```typescript
+import { z } from 'zod';
+
+export const {{SCHEMA_NAME}}Schema = z.object({
+  {{ZOD_FIELDS}}
+});
+
+export const create{{SCHEMA_NAME}}Schema = {{SCHEMA_NAME}}Schema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const update{{SCHEMA_NAME}}Schema = create{{SCHEMA_NAME}}Schema.partial();
+```
+
+## Environment Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `{{ENV_VAR_1}}` | Yes | - | {{ENV_DESCRIPTION_1}} |
+| `{{ENV_VAR_2}}` | No | `{{DEFAULT_2}}` | {{ENV_DESCRIPTION_2}} |
+
+## Phases
+
+See `AGENT_SWARM_SPEC.md` for detailed phase breakdown.
+
+| Phase | Description | Estimated Duration |
+|-------|-------------|-------------------|
+| 1 | Foundation (Schema, Types) | {{DURATION_1}} |
+| 2 | Core (API, Service, UI) | {{DURATION_2}} |
+| 3 | Integration (Pages, Navigation) | {{DURATION_3}} |
+| 4 | Hardening (Tests, Docs) | {{DURATION_4}} |
+
+## Performance Considerations
+
+- {{PERFORMANCE_1}}
+- {{PERFORMANCE_2}}
+- {{PERFORMANCE_3}}
+
+## Security Considerations
+
+- {{SECURITY_1}}
+- {{SECURITY_2}}
+- {{SECURITY_3}}

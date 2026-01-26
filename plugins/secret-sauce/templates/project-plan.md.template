@@ -1,0 +1,80 @@
+# Project: {{PROJECT_NAME}}
+
+## Overview
+
+{{OVERVIEW}}
+
+## Goals
+
+- [ ] {{PRIMARY_GOAL}}
+- [ ] {{SECONDARY_GOAL_1}}
+- [ ] {{SECONDARY_GOAL_2}}
+- [ ] {{SECONDARY_GOAL_3}}
+
+## Success Criteria
+
+- [ ] {{SUCCESS_CRITERIA_1}}
+- [ ] {{SUCCESS_CRITERIA_2}}
+- [ ] {{SUCCESS_CRITERIA_3}}
+- [ ] All tests passing with >80% coverage
+- [ ] No critical security vulnerabilities
+- [ ] Documentation complete
+
+## Dependencies
+
+### Existing Infrastructure
+
+- {{EXISTING_DEPENDENCY_1}}
+- {{EXISTING_DEPENDENCY_2}}
+
+### External Services
+
+- {{EXTERNAL_SERVICE_1}}
+- {{EXTERNAL_SERVICE_2}}
+
+### Team Dependencies
+
+- {{TEAM_DEPENDENCY_1}}
+
+## Risks
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|------------|--------|------------|
+| {{RISK_1}} | High/Med/Low | High/Med/Low | {{MITIGATION_1}} |
+| {{RISK_2}} | High/Med/Low | High/Med/Low | {{MITIGATION_2}} |
+| {{RISK_3}} | High/Med/Low | High/Med/Low | {{MITIGATION_3}} |
+| Scope creep | Medium | High | Strict PR scope review |
+| Technical debt | Medium | Medium | Continuous refactoring |
+
+## Timeline
+
+| Milestone | Target Date | Status |
+|-----------|-------------|--------|
+| Planning Complete | {{DATE}} | &#x23F3; |
+| Phase 1: Foundation | {{DATE_PHASE_1}} | &#x23F3; |
+| Phase 2: Core | {{DATE_PHASE_2}} | &#x23F3; |
+| Phase 3: Integration | {{DATE_PHASE_3}} | &#x23F3; |
+| Phase 4: Hardening | {{DATE_PHASE_4}} | &#x23F3; |
+| Final Review | {{DATE_FINAL}} | &#x23F3; |
+| Production Deploy | {{DATE_DEPLOY}} | &#x23F3; |
+
+## Stakeholders
+
+- **Owner**: {{OWNER}}
+- **Reviewers**: {{REVIEWERS}}
+- **Consumers**: {{CONSUMERS}}
+
+## Out of Scope
+
+- {{OUT_OF_SCOPE_1}}
+- {{OUT_OF_SCOPE_2}}
+
+## Open Questions
+
+- [ ] {{QUESTION_1}}
+- [ ] {{QUESTION_2}}
+
+## References
+
+- {{REFERENCE_1}}
+- {{REFERENCE_2}}

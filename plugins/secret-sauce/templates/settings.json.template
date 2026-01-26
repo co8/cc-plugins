@@ -1,0 +1,90 @@
+{
+  "$schema": "https://claude.ai/schemas/settings.json",
+  "version": "1.0.0",
+  "project": "{{PROJECT_NAME}}",
+
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "Bash(npm run *)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git branch*)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)"
+    ],
+    "ask": [
+      "Edit(*)",
+      "Write(*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git checkout *)",
+      "Bash(npm install *)",
+      "Bash(rm *)",
+      "Bash(mv *)",
+      "WebFetch(*)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(sudo *)",
+      "Bash(chmod 777 *)",
+      "Bash(curl * | bash)",
+      "Bash(wget * | bash)"
+    ]
+  },
+
+  "git": {
+    "autoCommit": false,
+    "autoPush": false,
+    "commitMessageFormat": "{{COMMIT_FORMAT}}",
+    "protectedBranches": ["main", "master", "production"]
+  },
+
+  "plugins": {
+    "enabled": [
+      "secret-sauce"
+    ],
+    "settings": {
+      "secret-sauce": {
+        "autoApplyRules": true,
+        "skillsPath": "~/.claude/skills"
+      }
+    }
+  },
+
+  "statusLine": {
+    "enabled": true,
+    "format": "[{{PROJECT_NAME}}] {branch} | {task}",
+    "showGitBranch": true,
+    "showTaskProgress": true
+  },
+
+  "editor": {
+    "tabSize": 2,
+    "insertSpaces": true,
+    "formatOnSave": true,
+    "defaultLanguage": "typescript"
+  },
+
+  "search": {
+    "exclude": [
+      "node_modules/**",
+      ".git/**",
+      "dist/**",
+      "build/**",
+      ".next/**",
+      "coverage/**"
+    ]
+  },
+
+  "environment": {
+    "shell": "/bin/zsh",
+    "workingDirectory": "{{WORKING_DIRECTORY}}"
+  }
+}

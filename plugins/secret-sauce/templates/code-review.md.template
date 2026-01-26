@@ -1,0 +1,166 @@
+# Code Review: {{PROJECT_NAME}}
+
+**Review Date**: {{DATE}}
+**Reviewer**: {{REVIEWER}}
+**Branch**: `{{BRANCH}}`
+**PR**: #{{PR_NUMBER}}
+
+## Summary
+
+| Metric | Value |
+|--------|-------|
+| Files Changed | {{FILES_CHANGED}} |
+| Lines Added | +{{LINES_ADDED}} |
+| Lines Removed | -{{LINES_REMOVED}} |
+| Agents Executed | {{AGENTS_EXECUTED}} |
+| Phases Completed | {{PHASES_COMPLETED}} |
+| Total Duration | {{TOTAL_DURATION}} |
+
+## Quality Metrics
+
+| Category | Score | Target | Notes |
+|----------|-------|--------|-------|
+| Type Safety | {{TYPE_SAFETY_SCORE}} | A | {{TYPE_SAFETY_NOTES}} |
+| Test Coverage | {{TEST_COVERAGE}}% | 80% | {{TEST_COVERAGE_NOTES}} |
+| Security | {{SECURITY_SCORE}} | A | {{SECURITY_NOTES}} |
+| Performance | {{PERFORMANCE_SCORE}} | B | {{PERFORMANCE_NOTES}} |
+| Code Style | {{CODE_STYLE_SCORE}} | A | {{CODE_STYLE_NOTES}} |
+| Documentation | {{DOCS_SCORE}} | B | {{DOCS_NOTES}} |
+
+### Score Legend
+
+- **A**: Excellent - Exceeds standards
+- **B**: Good - Meets standards
+- **C**: Acceptable - Minor improvements needed
+- **D**: Needs Work - Significant improvements needed
+- **F**: Failing - Does not meet standards
+
+## Issues Found
+
+| Severity | Issue | Location | Resolution |
+|----------|-------|----------|------------|
+| Critical | {{CRITICAL_ISSUE}} | {{CRITICAL_LOCATION}} | {{CRITICAL_RESOLUTION}} |
+| High | {{HIGH_ISSUE}} | {{HIGH_LOCATION}} | {{HIGH_RESOLUTION}} |
+| Medium | {{MEDIUM_ISSUE}} | {{MEDIUM_LOCATION}} | {{MEDIUM_RESOLUTION}} |
+| Low | {{LOW_ISSUE}} | {{LOW_LOCATION}} | {{LOW_RESOLUTION}} |
+
+### Issue Details
+
+#### {{ISSUE_TITLE}}
+
+**Severity**: {{ISSUE_SEVERITY}}
+**File**: `{{ISSUE_FILE}}`
+**Line**: {{ISSUE_LINE}}
+
+```{{ISSUE_LANGUAGE}}
+{{ISSUE_CODE_SNIPPET}}
+```
+
+**Problem**: {{ISSUE_PROBLEM}}
+
+**Solution**: {{ISSUE_SOLUTION}}
+
+## Optimizations Applied
+
+1. **{{OPTIMIZATION_1_TITLE}}**
+   - Description: {{OPTIMIZATION_1_DESCRIPTION}}
+   - Impact: {{OPTIMIZATION_1_IMPACT}}
+
+2. **{{OPTIMIZATION_2_TITLE}}**
+   - Description: {{OPTIMIZATION_2_DESCRIPTION}}
+   - Impact: {{OPTIMIZATION_2_IMPACT}}
+
+3. **{{OPTIMIZATION_3_TITLE}}**
+   - Description: {{OPTIMIZATION_3_DESCRIPTION}}
+   - Impact: {{OPTIMIZATION_3_IMPACT}}
+
+## Security Review Checklist
+
+### Authentication & Authorization
+
+- [ ] Authentication required on all protected endpoints
+- [ ] Authorization checks for resource access
+- [ ] Session management secure
+- [ ] Password handling follows best practices
+
+### Input Validation
+
+- [ ] All user inputs validated
+- [ ] SQL injection prevention (parameterized queries)
+- [ ] XSS prevention (output encoding)
+- [ ] CSRF protection enabled
+- [ ] File upload validation (if applicable)
+
+### Data Protection
+
+- [ ] Sensitive data encrypted at rest
+- [ ] Sensitive data encrypted in transit
+- [ ] PII handling compliant
+- [ ] Secrets not hardcoded
+- [ ] Environment variables used for configuration
+
+### Infrastructure
+
+- [ ] Rate limiting configured
+- [ ] Error messages don't leak sensitive info
+- [ ] Logging doesn't contain sensitive data
+- [ ] Dependencies up to date
+- [ ] No known vulnerabilities in dependencies
+
+## Recommendations
+
+### Immediate (Before Merge)
+
+- [ ] {{IMMEDIATE_1}}
+- [ ] {{IMMEDIATE_2}}
+- [ ] {{IMMEDIATE_3}}
+
+### Short-term (Next Sprint)
+
+- [ ] {{SHORT_TERM_1}}
+- [ ] {{SHORT_TERM_2}}
+- [ ] {{SHORT_TERM_3}}
+
+### Long-term (Technical Debt)
+
+- [ ] {{LONG_TERM_1}}
+- [ ] {{LONG_TERM_2}}
+- [ ] {{LONG_TERM_3}}
+
+## Test Results
+
+```
+{{TEST_OUTPUT}}
+```
+
+### Coverage Report
+
+| File | Statements | Branches | Functions | Lines |
+|------|------------|----------|-----------|-------|
+| {{COVERAGE_FILE_1}} | {{COVERAGE_1}}% | {{COVERAGE_1}}% | {{COVERAGE_1}}% | {{COVERAGE_1}}% |
+| **Total** | {{TOTAL_COVERAGE}}% | {{TOTAL_COVERAGE}}% | {{TOTAL_COVERAGE}}% | {{TOTAL_COVERAGE}}% |
+
+## Approval
+
+### Checklist
+
+- [ ] Code review complete
+- [ ] All critical/high issues resolved
+- [ ] Tests passing
+- [ ] Test coverage meets threshold
+- [ ] Security checklist reviewed
+- [ ] Documentation updated
+- [ ] No merge conflicts
+- [ ] CI/CD pipeline passing
+
+### Sign-off
+
+| Role | Name | Status | Date |
+|------|------|--------|------|
+| Author | {{AUTHOR}} | Submitted | {{SUBMIT_DATE}} |
+| Reviewer | {{REVIEWER}} | {{REVIEW_STATUS}} | {{REVIEW_DATE}} |
+| Approver | {{APPROVER}} | {{APPROVAL_STATUS}} | {{APPROVAL_DATE}} |
+
+## Comments
+
+{{ADDITIONAL_COMMENTS}}
