@@ -1,5 +1,7 @@
 # OWASP Security Checklist
 
+> Based on OWASP Top 10. See also: `references/coding-standards.md`
+
 ## Input Validation
 
 - [ ] Validate all inputs server-side

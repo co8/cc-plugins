@@ -1,0 +1,50 @@
+# Code Review: {{PROJECT_NAME}}
+
+**Date**: {{DATE}} | **Branch**: `{{BRANCH}}` | **PR**: #{{PR_NUMBER}}
+
+## Summary
+
+| Metric | Value |
+|--------|-------|
+| Files Changed | |
+| Lines Added | + |
+| Lines Removed | - |
+
+## Quality Metrics
+
+| Category | Score | Notes |
+|----------|-------|-------|
+| Type Safety | | |
+| Test Coverage | % | Target: 80% |
+| Security | | |
+| Performance | | |
+
+## Issues Found
+
+| Severity | Issue | Location | Resolution |
+|----------|-------|----------|------------|
+| Critical | | | |
+| High | | | |
+| Medium | | | |
+
+## Security Checklist
+
+- [ ] Input validation on all endpoints
+- [ ] SQL injection prevention
+- [ ] XSS prevention
+- [ ] No hardcoded secrets
+- [ ] Rate limiting configured
+
+## Recommendations
+
+### Before Merge
+- [ ]
+
+### Technical Debt
+- [ ]
+
+## Approval
+
+- [ ] Code review complete
+- [ ] Tests passing
+- [ ] Ready for merge

@@ -5,7 +5,11 @@ Best practices, rules, and templates extracted from real production projects.
 ## Installation
 
 ```bash
+# From marketplace (when published)
 claude plugins install secret-sauce
+
+# From local source
+claude plugins install secret-sauce --source /path/to/cc-plugins
 ```
 
 ## What's Included

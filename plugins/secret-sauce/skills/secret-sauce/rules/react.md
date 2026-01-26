@@ -1,5 +1,7 @@
 # React Component Patterns
 
+> Detailed patterns: `references/data-fetching.md`, `references/coding-standards.md`
+
 ## Components
 
 - [ ] Functional components only (no class components)

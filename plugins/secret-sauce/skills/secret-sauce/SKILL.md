@@ -1,6 +1,6 @@
 ---
 name: secret-sauce
-description: Development best practices, coding standards, and project patterns extracted from production projects. Use when starting new projects, setting up CLAUDE.md, configuring development workflows, or following coding standards for TypeScript, Next.js, React, or Supabase.
+description: Development best practices and project patterns. Use when starting projects, setting up CLAUDE.md, coding TypeScript/Next.js/React/Supabase, implementing AI flows, data fetching, testing, deployment, git workflows, or browser automation.
 ---
 
 # Secret Sauce
@@ -101,6 +101,21 @@ Configs (models, URLs) → Database with fallback
 - Use Jest with 30s timeout for ML operations
 - Add new test directories to test runners
 - Security tests required for auth/validation
+
+### AI Flow Pattern
+
+1. Zod schemas for input/output
+2. Prompt builder functions
+3. OpenAI SDK v6 with `zodResponseFormat()`
+4. Error handling with Result types
+5. Server action wrapper
+
+### Data Fetching
+
+- Always pass `signal` to fetch calls
+- Use `isAbortError()` to handle cancellation
+- Memoize fetch options to prevent refetches
+- Use `usePolling` for dashboards with visibility-aware intervals
 
 ### Security Checklist
 

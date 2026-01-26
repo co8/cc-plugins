@@ -1,5 +1,7 @@
 # Supabase DB Patterns
 
+> Detailed patterns: `references/supabase-patterns.md`
+
 ## Development Workflow
 
 - [ ] Use Supabase MCP (NOT CLI)

@@ -1,0 +1,48 @@
+# Changelog: {{PROJECT_NAME}}
+
+**Branch**: `feature/{{PROJECT_NAME}}` | **Started**: {{DATE}}
+
+---
+
+## Execution Log
+
+### Phase 0: Setup
+- [x] Project structure created
+- [x] Feature branch created
+- [ ] Dependencies installed
+
+---
+
+### Phase 1: Foundation
+
+| Agent | Task | Status |
+|-------|------|--------|
+| 1.1 | | |
+| 1.2 | | |
+
+---
+
+### Phase 2: Core
+
+| Agent | Task | Status |
+|-------|------|--------|
+| 2.1 | | |
+| 2.2 | | |
+
+---
+
+## Errors & Recovery
+
+| Time | Agent | Error | Resolution |
+|------|-------|-------|------------|
+| | | | |
+
+---
+
+## Summary
+
+| Metric | Value |
+|--------|-------|
+| Phases | /4 |
+| Agents | |
+| Errors | |

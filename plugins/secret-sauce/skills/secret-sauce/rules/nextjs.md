@@ -1,5 +1,7 @@
 # Next.js 16 Patterns
 
+> Detailed patterns: `references/deployment-patterns.md`
+
 ## Middleware
 
 - [ ] Use `src/proxy.ts` (NOT `middleware.ts`)

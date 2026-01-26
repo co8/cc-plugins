@@ -4,25 +4,25 @@ A guide for tracking project status in CLAUDE.md files using consistent patterns
 
 ---
 
-## Status Badge System
+## Status Indicators
 
-Use emoji badges for quick visual scanning:
+Use consistent text status markers:
 
-| Badge | Status | Description |
-|-------|--------|-------------|
-| `[fire emoji]` | Hot/Active | Currently being worked on |
-| `[construction emoji]` | In Progress | Development underway |
-| `[white check mark emoji]` | Complete | Finished and merged |
-| `[clipboard emoji]` | Planning/Research | Spec or research phase |
-| `[pause emoji]` | Paused | Temporarily on hold |
-| `[cross mark emoji]` | Cancelled | Abandoned or superseded |
+| Marker | Status | Description |
+|--------|--------|-------------|
+| `[HOT]` | Active | Currently being worked on |
+| `[WIP]` | In Progress | Development underway |
+| `[DONE]` | Complete | Finished and merged |
+| `[PLAN]` | Planning | Spec or research phase |
+| `[HOLD]` | Paused | Temporarily on hold |
+| `[STOP]` | Cancelled | Abandoned or superseded |
 
-### Badge Format
+### Status Format
 
 ```markdown
-### [fire emoji] Project Name
+### [HOT] Project Name
 
-**Status**: [construction emoji] In Progress
+**Status**: In Progress
 ```
 
 ---
@@ -34,9 +34,9 @@ Projects currently in development:
 ```markdown
 ## Active Projects
 
-### [fire emoji] Project Phoenix - Security Infrastructure
+### [HOT] Project Phoenix - Security Infrastructure
 
-**Status**: [white check mark emoji] Operational
+**Status**: [DONE] Operational
 **Branch**: `feature/project-phoenix` (merged)
 **Documentation**: [docs/projects/project-phoenix/](./docs/projects/project-phoenix/)
 
@@ -57,9 +57,9 @@ Brief description of the project's purpose and current state.
 
 ---
 
-### [construction emoji] Project Quarry - GPU Integration
+### [WIP] Project Quarry - GPU Integration
 
-**Status**: [construction emoji] In Progress
+**Status**: [WIP] In Progress
 **Branch**: `feature/quarry-integration`
 **Location**: `src/services/quarry/`
 **Documentation**: [docs/projects/quarry/](./docs/projects/quarry/)
@@ -87,9 +87,9 @@ Projects in planning or research phase:
 ```markdown
 ## Pending Projects
 
-### [clipboard emoji] BigQuery Integration (Project Scale)
+### [PLAN] BigQuery Integration (Project Scale)
 
-**Status**: [clipboard emoji] Research Complete
+**Status**: [PLAN] Research Complete
 **Documentation**: [docs/research/BIGQUERY_REPORT.md](./docs/research/BIGQUERY_REPORT.md)
 
 Description of the planned project:
@@ -103,9 +103,9 @@ Description of the planned project:
 
 ---
 
-### [clipboard emoji] WebGPU Visualization (Project Render)
+### [PLAN] WebGPU Visualization (Project Render)
 
-**Status**: [clipboard emoji] Research Complete
+**Status**: [PLAN] Research Complete
 **Documentation**: [docs/projects/webgpu/](./docs/projects/webgpu/)
 
 Description of the proposed project:
@@ -130,16 +130,16 @@ All completed projects have been moved to the completed directory. See [Complete
 
 ### Recently Completed (Jan 2026)
 
-#### [white check mark emoji] Cerberus - COMPLETE 20262201
+#### [DONE] Cerberus - COMPLETE 20260122
 
-**Status**: [white check mark emoji] Complete (Jan 2026)
+**Status**: [DONE] Complete (Jan 2026)
 **Location**: `docker/cerberus/`
 
 Brief description of what was accomplished.
 
-#### [white check mark emoji] Database Backup System - COMPLETE 20262201
+#### [DONE] Database Backup System - COMPLETE 20260122
 
-**Status**: [white check mark emoji] Complete (Jan 2026)
+**Status**: [DONE] Complete (Jan 2026)
 **Branch**: `feature/database-backup`
 **Documentation**: [docs/projects/completed/fortress/](./docs/projects/completed/fortress/)
 
@@ -224,21 +224,21 @@ For ongoing projects, track milestones:
 
 | Date | Milestone | Status |
 |------|-----------|--------|
-| 2026-01-15 | Research complete | [white check mark emoji] |
-| 2026-01-20 | Schema design | [white check mark emoji] |
-| 2026-01-25 | API implementation | [construction emoji] |
-| 2026-01-30 | UI components | [clipboard emoji] |
-| 2026-02-05 | Testing & QA | [clipboard emoji] |
-| 2026-02-10 | Production deploy | [clipboard emoji] |
+| 2026-01-15 | Research complete | [DONE] |
+| 2026-01-20 | Schema design | [DONE] |
+| 2026-01-25 | API implementation | [WIP] |
+| 2026-01-30 | UI components | [PLAN] |
+| 2026-02-05 | Testing & QA | [PLAN] |
+| 2026-02-10 | Production deploy | [PLAN] |
 ```
 
 ### Milestone Statuses
 
-- `[white check mark emoji]` Complete
-- `[construction emoji]` In Progress
-- `[clipboard emoji]` Planned
-- `[warning emoji]` At Risk
-- `[cross mark emoji]` Blocked
+- `[DONE]` Complete
+- `[WIP]` In Progress
+- `[PLAN]` Planned
+- `[RISK]` At Risk
+- `[BLOCK]` Blocked
 
 ---
 
@@ -247,18 +247,18 @@ For ongoing projects, track milestones:
 Use ISO date format with project suffix:
 
 ```markdown
-**Status**: [white check mark emoji] Complete (Jan 2026)
+**Status**: [DONE] Complete (Jan 2026)
 
 ## Or with specific date:
 
-**Status**: [white check mark emoji] COMPLETE 20262201
+**Status**: [DONE] COMPLETE 20260122
 ```
 
 ### Date Formats
 
 | Format | Use Case | Example |
 |--------|----------|---------|
-| `YYYYMMDD` | Completion suffix | `COMPLETE 20262201` |
+| `YYYYMMDD` | Completion suffix | `COMPLETE 20260122` |
 | `MMM YYYY` | Display text | `Complete (Jan 2026)` |
 | `YYYY-MM-DD` | Milestone dates | `2026-01-26` |
 
@@ -283,9 +283,9 @@ Add operational notes when needed:
 ```markdown
 ## Active Projects
 
-### [fire emoji] Project Phoenix - ZAP Security Infrastructure
+### [HOT] Project Phoenix - ZAP Security Infrastructure
 
-**Status**: [white check mark emoji] Operational
+**Status**: [DONE] Operational
 **Branch**: `feature/zap-phoenix` (merged)
 **Documentation**: [docs/projects/zap-phoenix/](./docs/projects/zap-phoenix/)
 
@@ -308,9 +308,9 @@ Full OWASP ZAP security scanning infrastructure with real-time monitoring.
 
 ## Pending Projects
 
-### [clipboard emoji] BigQuery Integration (Project Scale)
+### [PLAN] BigQuery Integration (Project Scale)
 
-**Status**: [clipboard emoji] Research Complete
+**Status**: [PLAN] Research Complete
 **Documentation**: [docs/research/BIGQUERY_REPORT.md](./docs/research/BIGQUERY_REPORT.md)
 
 Hybrid architecture for scaling vector search to 1M+ records.
@@ -327,9 +327,9 @@ Hybrid architecture for scaling vector search to 1M+ records.
 
 ### Recently Completed (Jan 2026)
 
-#### [white check mark emoji] Cerberus - COMPLETE 20262201
+#### [DONE] Cerberus - COMPLETE 20260122
 
-**Status**: [white check mark emoji] Complete (Jan 2026)
+**Status**: [DONE] Complete (Jan 2026)
 **Location**: `docker/cerberus/`
 
 Railway worker containerization with npm ci configuration.

@@ -1,5 +1,7 @@
 # TypeScript Strict Rules
 
+> Detailed patterns: `references/coding-standards.md`
+
 ## Compiler Settings
 
 - [ ] `strict: true` in tsconfig.json
