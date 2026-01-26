@@ -1,12 +1,54 @@
 # Claude Code Plugins by co8
 
-![Plugins](https://img.shields.io/badge/plugins-1-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen)
+![Plugins](https://img.shields.io/badge/plugins-1-blue) ![Skills](https://img.shields.io/badge/skills-2-purple) ![License](https://img.shields.io/badge/license-MIT-green) ![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen)
 
-A curated collection of Claude Code plugins for enhanced productivity and workflow automation.
+[![Claude Code](https://img.shields.io/badge/Claude_Code-Anthropic-F9DC3E?logo=anthropic&logoColor=white)](https://claude.ai/code) [![skills.sh](https://img.shields.io/badge/skills.sh-npx_skills_add-black?logo=vercel)](https://skills.sh) [![Vercel](https://img.shields.io/badge/Vercel-Hosted-000000?logo=vercel&logoColor=white)](https://vercel.com)
+
+![Generated with Claude](https://img.shields.io/badge/Generated_with-Claude-D4A574?logo=anthropic&logoColor=white)
+
+A curated collection of Claude Code plugins and skills for enhanced productivity and workflow automation.
+
+---
+
+## 📋 Available Skills & Plugins
+
+| Name                | Type   | Purpose                                          |
+| ------------------- | ------ | ------------------------------------------------ |
+| **telegram-plugin** | Plugin | Remote interaction with Claude Code via Telegram |
+| **secret-sauce**    | Skill  | Development best practices and patterns          |
+| **swarm-protocol**  | Skill  | Multi-agent orchestration for complex projects   |
+
+---
+
+## ⚡ Quick Install
+
+### Install Skills
+
+```bash
+# Install skills via skills.sh
+npx skills add co8/cc-plugins/secret-sauce
+npx skills add co8/cc-plugins/swarm-protocol
+```
+
+### Add the Marketplace
+
+```bash
+# Add cc-plugins marketplace to Claude Code
+/plugin marketplace add co8/cc-plugins
+```
+
+### Install Plugins
+
+```bash
+# Install plugins from the marketplace
+/plugin install telegram-plugin@cc-plugins
+```
+
+---
 
 ## 📦 Available Plugins
 
-### [Telegram Plugin](./plugins/telegram-plugin) ![Version](https://img.shields.io/badge/version-0.3.1-blue)
+### [Telegram Plugin](./plugins/telegram-plugin) ![Version](https://img.shields.io/badge/version-0.6.0-blue)
 
 **Remote interaction with Claude Code via Telegram**
 
@@ -31,208 +73,57 @@ Control and monitor Claude Code remotely via Telegram. Receive smart notificatio
 
 ---
 
-## 🚀 Installation
+## 🎯 Available Skills
 
-Each plugin can be installed independently. Visit the plugin's directory for specific installation instructions.
+### [Secret Sauce](./skills/secret-sauce) ![Version](https://img.shields.io/badge/version-1.2.0-purple)
 
-### General Installation Pattern
+**Development best practices and project patterns**
 
-1. Clone this repository:
-
-```bash
-git clone https://github.com/co8/cc-plugins.git
-```
-
-2. Navigate to the desired plugin:
-
-```bash
-cd cc-plugins/plugins/<plugin-name>
-```
-
-3. Follow the plugin-specific installation instructions in its README.md
-
-## 🛠️ Creating Your Own Plugin
-
-Use our plugin generator to quickly create new plugins with best practices built-in:
-
-```bash
-# Clone the repository
-git clone https://github.com/co8/cc-plugins.git
-cd cc-plugins
-
-# Run the plugin generator
-npm run create-plugin
-```
-
-The generator provides three template types:
-
-1. **Full-featured** - Complete plugin with MCP server, hooks, commands, and skills
-2. **MCP Server Only** - Just an MCP server for providing tools to Claude
-3. **Hooks Only (minimal)** - Simple event-driven automation
+Centralized collection of best practices, rules, and templates extracted from real production projects. Enables carrying accumulated learnings to future projects automatically.
 
 **Features:**
-- 🎨 Interactive setup wizard
-- 📦 Automatic dependency installation
-- ✅ Built-in testing framework
-- 📝 Complete documentation templates
-- 🔧 Shared utility libraries (config, logging, rate limiting)
 
-**Documentation:**
-- [Plugin Development Guide](./docs/PLUGIN_DEVELOPMENT.md)
-- [Template Documentation](./templates/README.md)
-- [Scripts Documentation](./scripts/README.md)
+- 📝 Project Templates - CLAUDE.md, settings.json, project docs
+- 🔧 Framework Rules - TypeScript, Next.js, React, Supabase patterns
+- 🚀 Deployment Guides - Vercel, Supabase configuration
+- 🧪 Testing Standards - Unit, integration, E2E patterns
+- 🔄 Git Workflows - Commit conventions, PR templates
 
-**Example workflow:**
-```bash
-# Create plugin
-npm run create-plugin
-
-# Develop
-cd plugins/my-awesome-plugin
-# Edit mcp-server/server/handlers.js
-# Add hooks in hooks/scripts/
-
-# Test
-cd mcp-server && npm test
-
-# Use in Claude Code
-/my-awesome-plugin:configure
-```
-
-## 📦 Plugin Management & Registry
-
-### Plugin Manager CLI
-
-Use the plugin manager CLI to search, discover, and manage plugins from the registry:
+**Quick Start:**
 
 ```bash
-# Install CLI dependencies
-cd cli
-npm install
-
-# Optional: Link globally for easier access
-npm link
+npx skills add co8/cc-plugins/secret-sauce
 ```
-
-**Available Commands:**
-
-```bash
-# Search for plugins
-plugin-manager search <query>
-
-# Get detailed plugin information
-plugin-manager info <plugin-name>
-
-# Validate plugin structure
-plugin-manager validate <plugin-path>
-
-# List installed plugins
-plugin-manager list
-
-# Show help
-plugin-manager help
-```
-
-**Example Usage:**
-
-```bash
-# Search for telegram-related plugins
-plugin-manager search telegram
-
-# Get info about telegram-plugin
-plugin-manager info telegram-plugin
-
-# Validate your plugin
-plugin-manager validate ./plugins/my-plugin
-```
-
-### Plugin Registry
-
-The centralized plugin registry provides:
-
-- **Plugin Discovery** - Search and browse available plugins
-- **Version Management** - Track multiple plugin versions
-- **Integrity Verification** - SHA-512 hash validation
-- **Publisher Verification** - Verified plugin authors
-- **Metadata** - Categories, tags, ratings, downloads
-
-**Registry Structure:**
-- Registry file: `registry/registry.json`
-- Schema validation: `registry/schema.json`
-- API documentation: [docs/REGISTRY_API.md](./docs/REGISTRY_API.md)
-
-**Publishing Your Plugin:**
-
-1. Create a GitHub release with tarball
-2. Generate SHA-512 integrity hash
-3. Update `registry/registry.json` with plugin metadata
-4. Submit pull request
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed publishing instructions.
-
-### Quick Start Guides
-
-- **[Generator Quick Start](./GENERATOR_QUICKSTART.md)** - Create your first plugin in 30 minutes
-- **[Registry Quick Start](./QUICKSTART_REGISTRY.md)** - Get started with the registry in 5 minutes
-
-## 📋 Plugin Structure
-
-Each plugin in this marketplace follows the standard Claude Code plugin structure:
-
-```
-plugin-name/
-├── .claude-plugin/
-│   ├── plugin.json          # Plugin metadata
-│   └── marketplace.json     # Marketplace listing info
-├── commands/                # Slash commands
-├── skills/                  # Knowledge bases
-├── agents/                  # Specialized agents
-├── hooks/                   # Event hooks
-├── mcp-server/             # MCP server (if applicable)
-├── README.md               # Plugin documentation
-└── LICENSE                 # Plugin license
-```
-
-## 🤝 Contributing
-
-Interested in contributing a plugin? We welcome high-quality plugins that enhance the Claude Code experience.
-
-### Plugin Submission Guidelines
-
-1. **Quality Standards**
-
-   - Clear documentation
-   - Working examples
-   - Proper error handling
-   - Security best practices
-
-2. **Required Files**
-
-   - `.claude-plugin/plugin.json`
-   - `.claude-plugin/marketplace.json`
-   - `README.md` with setup instructions
-   - `LICENSE` file
-
-3. **Submission Process**
-   - Fork this repository
-   - Create your plugin in `plugins/<your-plugin-name>/`
-   - Test thoroughly
-   - Submit a pull request
-
-## 📄 License
-
-This marketplace repository is licensed under MIT License. Individual plugins may have their own licenses - please check each plugin's LICENSE file.
-
-## 🔗 Links
-
-- [Claude Code Documentation](https://claude.ai/claude-code)
-- [Report Issues](https://github.com/co8/cc-plugins/issues)
-- [co8 Website](https://co8.com)
-
-## 📬 Contact
-
-**Enrique R Grullon** Email: e@co8.com GitHub: [@co8](https://github.com/co8)
 
 ---
 
-Made with ❤️ by co8.com
+### [Swarm Protocol](./skills/swarm-protocol) ![Version](https://img.shields.io/badge/version-1.2.0-purple)
+
+**Multi-agent development orchestration for complex projects**
+
+Coordinate parallel development workstreams, manage project documentation structure, and automate milestone commits. Ideal for large features requiring multiple agents working simultaneously.
+
+**Features:**
+
+- 🐝 Parallel Agents - Coordinate multiple workstreams
+- 📋 Project Planning - Structured documentation templates
+- 🎯 Milestone Tracking - Automated progress commits
+- 🔀 Phase Management - Sequential and parallel execution
+- 📊 Code Review - Quality metrics and recommendations
+
+**Quick Start:**
+
+```bash
+npx skills add co8/cc-plugins/swarm-protocol
+/swarm <project-name>
+```
+
+---
+
+## 📄 License
+
+MIT License. See [LICENSE](./LICENSE) for details.
+
+---
+
+Made with ❤️ by [co8.com](https://co8.com)
