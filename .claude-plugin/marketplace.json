@@ -59,7 +59,7 @@
       "name": "secret-sauce",
       "source": "./plugins/secret-sauce",
       "description": "Best practices, rules, and templates extracted from real production projects",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": {
         "name": "Enrique R Grullon",
         "email": "e@co8.com"

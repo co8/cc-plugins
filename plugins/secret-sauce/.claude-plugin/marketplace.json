@@ -1,6 +1,6 @@
 {
   "name": "secret-sauce",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "Secret Sauce",
   "description": "Best practices, rules, and templates extracted from real projects",
   "longDescription": "A comprehensive collection of development best practices, coding standards, workflow patterns, and project templates extracted from production projects. Includes TypeScript, React, Next.js, Supabase patterns, and more.",
