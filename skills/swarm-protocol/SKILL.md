@@ -1,6 +1,6 @@
 ---
-name: swarm
-description: Multi-agent development orchestration for complex projects. Use this skill when orchestrating parallel development workstreams, coordinating multiple agent tasks, managing project documentation structure, or executing `/swarm` commands. Triggers on: (1) `/swarm <project-name>` to initialize new projects with full planning, (2) `/swarm` (no args) to continue existing or start new project, (3) requests involving parallel agent coordination, milestone commits, or multi-phase development workflows.
+name: swarm-protocol
+description: Multi-agent development orchestration for complex projects. Use this skill when orchestrating parallel development workstreams, coordinating multiple agent tasks, managing project documentation structure, or executing `/swarm-protocol-protocol` commands. Triggers on: (1) `/swarm-protocol-protocol <project-name>` to initialize new projects with full planning, (2) `/swarm-protocol-protocol` (no args) to continue existing or start new project, (3) requests involving parallel agent coordination, milestone commits, or multi-phase development workflows.
 ---
 
 # Swarm Protocol
@@ -11,13 +11,13 @@ Multi-agent orchestration framework for complex software development projects. C
 
 | Command | Purpose |
 |---------|---------|
-| `/swarm <project-name>` | Initialize new project with full planning phase |
-| `/swarm` | Continue existing project, convert a plan, or start new |
-| `/swarm --from-plan=<name>` | Convert a specific plan file to swarm project |
+| `/swarm-protocol-protocol <project-name>` | Initialize new project with full planning phase |
+| `/swarm-protocol-protocol` | Continue existing project, convert a plan, or start new |
+| `/swarm-protocol-protocol --from-plan=<name>` | Convert a specific plan file to swarm project |
 
 ---
 
-## `/swarm` (No Arguments)
+## `/swarm-protocol` (No Arguments)
 
 Smart detection: Check branch (`feature/<name>`) → `docs/projects/` → `~/.claude/plans/` → prompt user.
 
@@ -33,7 +33,7 @@ Smart detection: Check branch (`feature/<name>`) → `docs/projects/` → `~/.cl
 
 ---
 
-## `/swarm <project-name>`
+## `/swarm-protocol <project-name>`
 
 Initialize and execute a multi-agent development project.
 
@@ -125,7 +125,7 @@ If project uses Supabase preview branches, see `references/supabase-deployment.m
 | **Error** | Log, retry once, if fails pause and prompt, block dependents |
 | **File Conflict** | Halt agents, alert user, request resolution |
 
-**Recovery**: `/swarm --resume` (auto-resume) | `/swarm --agent=2.3 --retry` | `/swarm --skip-agent=2.3`
+**Recovery**: `/swarm-protocol --resume` (auto-resume) | `/swarm-protocol-protocol --agent=2.3 --retry` | `/swarm-protocol-protocol --skip-agent=2.3`
 
 ---
 

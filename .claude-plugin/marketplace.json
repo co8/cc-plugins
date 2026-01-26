@@ -59,8 +59,8 @@
       "homepage": "https://github.com/co8/cc-plugins/tree/main/skills/secret-sauce"
     },
     {
-      "name": "swarm",
-      "source": "./skills/swarm",
+      "name": "swarm-protocol",
+      "source": "./skills/swarm-protocol",
       "description": "Multi-agent development orchestration - coordinate parallel workstreams, manage project documentation, and automate milestone commits",
       "version": "1.2.0",
       "author": {
@@ -78,7 +78,7 @@
         "project-management"
       ],
       "repository": "https://github.com/co8/cc-plugins",
-      "homepage": "https://github.com/co8/cc-plugins/tree/main/skills/swarm"
+      "homepage": "https://github.com/co8/cc-plugins/tree/main/skills/swarm-protocol"
     }
   ]
 }
