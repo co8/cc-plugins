@@ -62,7 +62,7 @@
       "name": "swarm-protocol",
       "source": "./skills/swarm-protocol",
       "description": "Multi-agent development orchestration - coordinate parallel workstreams, manage project documentation, and automate milestone commits",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "author": {
         "name": "Enrique R Grullon",
         "email": "e@co8.com"

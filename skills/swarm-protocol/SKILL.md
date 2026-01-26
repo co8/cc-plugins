@@ -1,6 +1,6 @@
 ---
 name: swarm-protocol
-description: Multi-agent development orchestration for complex projects. Use this skill when orchestrating parallel development workstreams, coordinating multiple agent tasks, managing project documentation structure, or executing `/swarm-protocol-protocol` commands. Triggers on: (1) `/swarm-protocol-protocol <project-name>` to initialize new projects with full planning, (2) `/swarm-protocol-protocol` (no args) to continue existing or start new project, (3) requests involving parallel agent coordination, milestone commits, or multi-phase development workflows.
+description: "Multi-agent development orchestration for complex projects. Use this skill when orchestrating parallel development workstreams, coordinating multiple agent tasks, managing project documentation structure, or executing `/swarm-protocol` commands. Triggers on: (1) `/swarm-protocol <project-name>` to initialize new projects with full planning, (2) `/swarm-protocol` (no args) to continue existing or start new project, (3) requests involving parallel agent coordination, milestone commits, or multi-phase development workflows."
 ---
 
 # Swarm Protocol
