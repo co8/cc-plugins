@@ -12,11 +12,11 @@ A curated collection of Claude Code plugins and skills for enhanced productivity
 
 ## 📋 Available Skills & Plugins
 
-| Name                | Type   | Purpose                                          |
-| ------------------- | ------ | ------------------------------------------------ |
-| **telegram-plugin** | Plugin | Remote interaction with Claude Code via Telegram |
-| **secret-sauce**    | Skill  | Development best practices and patterns          |
-| **swarm-protocol**  | Skill  | Multi-agent orchestration for complex projects   |
+| -------------------------| ------ | ------------------------------------------------ |
+| **Secret Sauce**         | Skill  | Development best practices and patterns          |
+| **Swarm Protocol**       | Skill  | Multi-agent orchestration for complex projects   |
+| ------------------------ | ------ | ------------------------------------------------ |
+| **Telegram Integration** | Plugin | Remote interaction with Claude Code via Telegram |
 
 ---
 
@@ -26,8 +26,11 @@ A curated collection of Claude Code plugins and skills for enhanced productivity
 
 ```bash
 # Install skills via skills.sh
-npx skills add co8/cc-plugins/secret-sauce
-npx skills add co8/cc-plugins/swarm-protocol
+npx skills add co8/cc-plugins
+
+#Individually
+npx skills add https://github.com/co8/cc-plugins --skill secret-sauce
+npx skills add https://github.com/co8/cc-plugins --skill swarm-protocol
 ```
 
 ### Add the Marketplace
@@ -41,7 +44,7 @@ npx skills add co8/cc-plugins/swarm-protocol
 
 ```bash
 # Install plugins from the marketplace
-/plugin install telegram-plugin@cc-plugins
+/plugin install telegram-plugin@co8/cc-plugins
 ```
 
 ---
