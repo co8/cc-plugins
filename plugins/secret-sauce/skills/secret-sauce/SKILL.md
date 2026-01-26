@@ -1,6 +1,6 @@
 ---
 name: secret-sauce
-description: Development best practices and project patterns. Use when starting projects, setting up CLAUDE.md, coding TypeScript/Next.js/React/Supabase, implementing AI flows, data fetching, testing, deployment, git workflows, or browser automation.
+description: Development best practices and project patterns. Use when starting projects, setting up CLAUDE.md, coding TypeScript/Next.js/React/Supabase, implementing AI flows, data fetching, testing, deployment, git workflows, browser automation, centralized configuration, or Tailwind CSS v4.
 ---
 
 # Secret Sauce
@@ -11,9 +11,12 @@ Best practices, rules, and templates extracted from real production projects.
 
 | Category | Reference File |
 |----------|----------------|
+| **Tech Stack** | `references/tech-stack.md` |
 | **Project Setup** | `references/claude-md-template.md` |
 | **Project Tracking** | `references/project-tracking.md` |
 | **Coding Standards** | `references/coding-standards.md` |
+| **Centralization** | `references/centralization-patterns.md` |
+| **Tailwind v4** | `references/tailwind-v4.md` |
 | **AI Development** | `references/ai-flow-patterns.md` |
 | **Data Fetching** | `references/data-fetching.md` |
 | **Git Workflow** | `references/git-workflows.md` |
@@ -85,6 +88,13 @@ Every project CLAUDE.md should include:
 - Never commit without confirmation
 - Branch naming: `feature/<name>`, `fix/<name>`
 - PR template with summary and test plan
+
+### Centralization Pattern
+
+All configuration in `@/config`:
+```typescript
+import { env, isProduction, getServiceUrl } from '@/config';
+```
 
 ### Configuration Hierarchy
 

@@ -374,3 +374,99 @@ healthServer.listen(process.env.PORT || 3001);
 - [ ] Queue processing confirmed
 - [ ] Error monitoring active
 - [ ] Performance baseline established
+
+---
+
+## Rollback Procedures
+
+### Vercel Rollback
+
+```bash
+# List recent deployments
+vercel ls
+
+# Rollback to previous deployment
+vercel rollback
+
+# Rollback to specific deployment
+vercel rollback <deployment-url>
+
+# Via dashboard: Deployments → ... → Promote to Production
+```
+
+### Database Migration Rollback
+
+```sql
+-- Always include rollback in migrations
+-- Up
+ALTER TABLE users ADD COLUMN status VARCHAR(20);
+
+-- Down (in separate file or comment)
+ALTER TABLE users DROP COLUMN status;
+```
+
+```bash
+# Supabase: Reset to previous migration
+supabase db reset
+
+# Manual rollback (if backup exists)
+psql $DATABASE_URL < backup.sql
+```
+
+### Railway Rollback
+
+```bash
+# Via CLI
+railway service rollback
+
+# Via dashboard: Deployments → Select previous → Redeploy
+```
+
+### Rollback Checklist
+
+Pre-rollback:
+- [ ] Identify the issue and confirm rollback is needed
+- [ ] Notify team of planned rollback
+- [ ] Verify previous version is stable
+- [ ] Check for breaking database changes
+
+Execute:
+- [ ] Rollback application (Vercel/Railway)
+- [ ] Rollback database if needed (with backup)
+- [ ] Verify health checks pass
+- [ ] Test critical user flows
+
+Post-rollback:
+- [ ] Monitor error rates for 15-30 minutes
+- [ ] Document incident and root cause
+- [ ] Plan fix for failed deployment
+
+### Blue-Green Deployment Pattern
+
+```
+Production (Blue) ← Current traffic
+Staging (Green)   ← New version testing
+
+1. Deploy to Green
+2. Run smoke tests on Green
+3. Switch traffic Blue → Green
+4. Keep Blue warm for quick rollback
+5. After verification, Blue becomes next Green
+```
+
+### Canary Deployment Pattern
+
+```
+100% → Production (v1.0)
+
+Deploy canary:
+ 95% → Production (v1.0)
+  5% → Canary (v1.1)
+
+Monitor metrics, if OK:
+ 50% → Production (v1.0)
+ 50% → Canary (v1.1)
+
+Full rollout:
+100% → Production (v1.1)
+```

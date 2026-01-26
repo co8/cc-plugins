@@ -398,3 +398,116 @@ async function executeWithTools(
 5. **Wrap for server actions** with clean Result types
 6. **Set appropriate temperature**: 0-0.3 for factual, 0.7+ for creative
 7. **Log errors** with context for debugging
+
+---
+
+## Streaming Responses
+
+For real-time AI output, use the OpenAI streaming API:
+
+### Basic Streaming Pattern
+
+```typescript
+import OpenAI from 'openai';
+
+const openai = new OpenAI();
+
+export async function streamCompletion(
+  prompt: string,
+  onChunk: (chunk: string) => void
+): Promise<string> {
+  const stream = await openai.chat.completions.create({
+    model: 'gpt-4o',
+    messages: [{ role: 'user', content: prompt }],
+    stream: true,
+  });
+
+  let fullContent = '';
+
+  for await (const chunk of stream) {
+    const content = chunk.choices[0]?.delta?.content || '';
+    fullContent += content;
+    onChunk(content);
+  }
+
+  return fullContent;
+}
+```
+
+### Server Action with Streaming
+
+```typescript
+'use server';
+
+import { createStreamableValue } from 'ai/rsc';
+
+export async function streamAction(prompt: string) {
+  const stream = createStreamableValue('');
+
+  (async () => {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [{ role: 'user', content: prompt }],
+      stream: true,
+    });
+
+    for await (const chunk of response) {
+      const content = chunk.choices[0]?.delta?.content || '';
+      stream.update(content);
+    }
+
+    stream.done();
+  })();
+
+  return { stream: stream.value };
+}
+```
+
+### Rate Limit Retry Pattern
+
+```typescript
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  maxRetries = 3,
+  baseDelay = 1000
+): Promise<T> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (error instanceof OpenAI.RateLimitError && attempt < maxRetries - 1) {
+        const delay = baseDelay * Math.pow(2, attempt);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw new Error('Max retries exceeded');
+}
+```
+
+### Token Counting
+
+```typescript
+import { encoding_for_model } from 'tiktoken';
+
+export function countTokens(text: string, model = 'gpt-4o'): number {
+  const enc = encoding_for_model(model);
+  const tokens = enc.encode(text);
+  enc.free();
+  return tokens.length;
+}
+
+export function estimateCost(
+  inputTokens: number,
+  outputTokens: number,
+  model = 'gpt-4o'
+): number {
+  const pricing: Record<string, { input: number; output: number }> = {
+    'gpt-4o': { input: 0.0025, output: 0.01 },
+    'gpt-4o-mini': { input: 0.00015, output: 0.0006 },
+  };
+  const { input, output } = pricing[model] ?? pricing['gpt-4o'];
+  return (inputTokens * input + outputTokens * output) / 1000;
+}

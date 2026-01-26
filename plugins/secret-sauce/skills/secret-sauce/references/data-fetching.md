@@ -4,6 +4,129 @@ React data fetching patterns with proper AbortController cleanup for Next.js.
 
 ---
 
+## Server Component Data Fetching
+
+Next.js App Router Server Components fetch data directly without hooks:
+
+### Basic Server Component Fetch
+
+```typescript
+// app/users/page.tsx
+async function getUsers() {
+  const res = await fetch('https://api.example.com/users', {
+    next: { revalidate: 60 }, // ISR: revalidate every 60 seconds
+  });
+
+  if (!res.ok) throw new Error('Failed to fetch users');
+  return res.json();
+}
+
+export default async function UsersPage() {
+  const users = await getUsers();
+
+  return (
+    <ul>
+      {users.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Parallel Data Fetching
+
+```typescript
+// Fetch multiple resources in parallel
+export default async function DashboardPage() {
+  const [users, posts, stats] = await Promise.all([
+    getUsers(),
+    getPosts(),
+    getStats(),
+  ]);
+
+  return (
+    <Dashboard users={users} posts={posts} stats={stats} />
+  );
+}
+```
+
+### Caching Strategies
+
+```typescript
+// No cache - always fresh
+fetch(url, { cache: 'no-store' });
+
+// Force cache - static
+fetch(url, { cache: 'force-cache' });
+
+// Time-based revalidation (ISR)
+fetch(url, { next: { revalidate: 3600 } }); // 1 hour
+
+// Tag-based revalidation
+fetch(url, { next: { tags: ['users'] } });
+
+// Revalidate by tag (in Server Action)
+import { revalidateTag } from 'next/cache';
+revalidateTag('users');
+```
+
+### Streaming with Suspense
+
+```typescript
+import { Suspense } from 'react';
+
+export default function Page() {
+  return (
+    <main>
+      <h1>Dashboard</h1>
+
+      {/* Instant */}
+      <Header />
+
+      {/* Streams in */}
+      <Suspense fallback={<TableSkeleton />}>
+        <SlowDataTable />
+      </Suspense>
+
+      {/* Streams in parallel */}
+      <Suspense fallback={<ChartSkeleton />}>
+        <SlowChart />
+      </Suspense>
+    </main>
+  );
+}
+
+async function SlowDataTable() {
+  const data = await fetchSlowData(); // Takes 2s
+  return <DataTable data={data} />;
+}
+```
+
+### Server Actions for Mutations
+
+```typescript
+'use server';
+
+import { revalidatePath } from 'next/cache';
+
+export async function createUser(formData: FormData) {
+  const name = formData.get('name') as string;
+
+  await db.users.create({ data: { name } });
+
+  revalidatePath('/users');
+}
+
+// Usage in Client Component
+<form action={createUser}>
+  <input name="name" />
+  <button type="submit">Create</button>
+</form>
+```
+
+---
+
 ## useFetch Hook Pattern
 
 One-time fetch with automatic abort on unmount:
