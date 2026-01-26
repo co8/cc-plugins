@@ -54,6 +54,29 @@
       ],
       "repository": "https://github.com/co8/cc-plugins",
       "homepage": "https://github.com/co8/cc-plugins/tree/main/plugins/swarm-protocol"
+    },
+    {
+      "name": "secret-sauce",
+      "source": "./plugins/secret-sauce",
+      "description": "Best practices, rules, and templates extracted from real production projects",
+      "version": "1.0.0",
+      "author": {
+        "name": "Enrique R Grullon",
+        "email": "e@co8.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "best-practices",
+        "rules",
+        "templates",
+        "typescript",
+        "nextjs",
+        "react",
+        "supabase",
+        "workflow"
+      ],
+      "repository": "https://github.com/co8/cc-plugins",
+      "homepage": "https://github.com/co8/cc-plugins/tree/main/plugins/secret-sauce"
     }
   ]
 }
