@@ -60,41 +60,35 @@ export class MessageBatcher {
 
     if (this.pending.length === 0) return null;
 
-    // Send compacting notification
-    try {
-      const count = this.pending.length;
-      const result = await this.sendMessageFn(
-        `📦 Compacting ${count} message${count > 1 ? "s" : ""}...`,
-        "high"
-      );
-      this.compactingMessageId = result.message_id;
-    } catch (error) {
-      log("error", "Failed to send compacting notification", {
-        error: error.message,
-      });
-    }
+    const count = this.pending.length;
 
-    // Combine similar messages
+    // Combine messages with a clean separator
     const messages = this.pending.map((p) => p.message);
-    const combined = messages.join("\n\n---\n\n");
-
+    const combined = messages.join("\n\n─────\n\n");
     this.pending = [];
 
-    // Update compacting notification to show completion
+    // For single messages, send directly without batching indicator
+    if (count === 1) {
+      return combined;
+    }
+
+    // For multiple messages, show compact header
+    try {
+      const result = await this.sendMessageFn(`⏳ ${count} updates`, "high");
+      this.compactingMessageId = result.message_id;
+    } catch (error) {
+      log("error", "Failed to send batch header", { error: error.message });
+    }
+
+    // Edit to show combined content
     if (this.compactingMessageId) {
       try {
-        await this.editMessageFn(
-          this.compactingMessageId,
-          `✅ Compacting complete\n\n${combined}`
-        );
+        await this.editMessageFn(this.compactingMessageId, combined);
         this.compactingMessageId = null;
         return null; // Message already sent via edit
       } catch (error) {
-        log("error", "Failed to edit compacting notification", {
-          error: error.message,
-        });
+        log("error", "Failed to edit batch message", { error: error.message });
         this.compactingMessageId = null;
-        // Fall through to return combined message
       }
     }
 

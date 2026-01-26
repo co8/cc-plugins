@@ -68,7 +68,7 @@ export async function enableAfkMode(startListenerFn, sendMessageFn) {
     await startListenerFn();
     log("info", "Message listener started automatically with AFK mode");
 
-    const message = "🤖 <b>AFK Enabled</b> | Claude will notify you via Telegram";
+    const message = "🤖 <b>AFK Mode</b> · Notifications active";
     await sendMessageFn(message, "high");
     log("info", "AFK mode enabled");
     return {
@@ -103,7 +103,7 @@ export async function disableAfkMode(stopListenerFn, sendMessageFn) {
     await stopListenerFn();
     log("info", "Message listener stopped automatically with AFK mode");
 
-    const message = `🖥️ <b>AFK Disabled</b> | Duration of Session: ${duration}`;
+    const message = `👋 <b>Back</b> · Session: ${duration}`;
     await sendMessageFn(message, "high");
     log("info", "AFK mode disabled", { duration });
     return {

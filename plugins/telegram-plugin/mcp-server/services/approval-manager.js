@@ -102,7 +102,7 @@ export async function sendApprovalRequest(
     // Add "Other" button for custom input
     keyboard.push([
       {
-        text: "💬 Other (custom text)",
+        text: "📝 Other",
         callback_data: JSON.stringify({ idx: -1, label: "Other" }),
       },
     ]);
@@ -125,7 +125,7 @@ export async function sendApprovalRequest(
       )
       .join("\n");
 
-    const messageText = `🤔 <b>${escapedHeader}</b>\n\n${escapedQuestion}\n\n<i>Options:</i>\n${escapedOptions}`;
+    const messageText = `❓ <b>${escapedHeader}</b>\n\n${escapedQuestion}\n\n${escapedOptions}`;
 
     // Debug logging (non-blocking, using logger)
     log("debug", "Approval request details", {
@@ -295,9 +295,7 @@ export async function pollResponse(
           const isOtherSelected = selectedIdx === -1;
           updatedKeyboard.push([
             {
-              text: isOtherSelected
-                ? "✅ 💬 Other (custom text)"
-                : "💬 Other (custom text)",
+              text: isOtherSelected ? "✅ 📝 Other" : "📝 Other",
               callback_data: JSON.stringify({ idx: -1, label: "Other" }),
             },
           ]);
@@ -319,10 +317,7 @@ export async function pollResponse(
 
           // Handle "Other" option - request text input
           if (data.idx === -1) {
-            await bot.sendMessage(
-              config.chat_id,
-              "💬 Please send your custom response as a text message:"
-            );
+            await bot.sendMessage(config.chat_id, "📝 Send your response:");
 
             // Wait for text message
             textHandler = (msg) => {

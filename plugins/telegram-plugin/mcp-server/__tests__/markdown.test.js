@@ -60,8 +60,10 @@ describe('Markdown to HTML Conversion', () => {
     it('should convert code blocks to HTML', () => {
       const input = '```js\nconst x = 1;\n```';
       const result = markdownToHTML(input, { preserveFormatting: true });
-      expect(result).toContain('<pre><code class="language-js">');
+      // Telegram only supports <pre> tags, not language-specific syntax highlighting
+      expect(result).toContain('<pre>');
       expect(result).toContain('const x = 1;');
+      expect(result).toContain('</pre>');
     });
 
     it('should convert links to HTML', () => {
@@ -81,6 +83,12 @@ describe('Markdown to HTML Conversion', () => {
       const result = markdownToHTML(input, { preserveFormatting: true });
       expect(result).toContain('<b>bold</b>');
       expect(result).toContain('<i>italic</i>');
+    });
+
+    it('should convert spoiler text to HTML', () => {
+      const input = 'This is ||hidden|| text';
+      const result = markdownToHTML(input, { preserveFormatting: true });
+      expect(result).toContain('<tg-spoiler>hidden</tg-spoiler>');
     });
 
     it('should protect code blocks from further processing', () => {

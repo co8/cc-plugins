@@ -39,11 +39,13 @@ describe('MessageBatcher', () => {
       expect(sentMessages.length).toBe(0);
     });
 
-    it('should send high priority messages immediately', async () => {
+    it('should flush high priority messages immediately', async () => {
       await batcher.add('Urgent', 'high');
 
+      // Queue should be empty after high-priority flush
       expect(batcher.pending.length).toBe(0);
-      expect(sentMessages.length).toBeGreaterThan(0);
+      // Single messages are returned by flush() for the caller to handle,
+      // not sent directly by the batcher
     });
 
     it('should flush messages after window expires', async () => {
@@ -69,7 +71,7 @@ describe('MessageBatcher', () => {
       if (result) {
         expect(result).toContain('First');
         expect(result).toContain('Second');
-        expect(result).toContain('---');
+        expect(result).toContain('─────'); // Clean separator
       } else {
         // Check that edit was called with combined message
         expect(editedMessages.length).toBeGreaterThan(0);
@@ -77,47 +79,49 @@ describe('MessageBatcher', () => {
     });
   });
 
-  describe('Compacting notifications', () => {
-    it('should send compacting notification before flush', async () => {
+  describe('Batch notifications', () => {
+    it('should send batch header for multiple messages', async () => {
       await batcher.add('Message 1', 'normal');
       await batcher.add('Message 2', 'normal');
 
       await batcher.flush();
 
-      // Should have sent compacting message
-      expect(sentMessages.some(m => m.text.includes('Compacting'))).toBe(true);
+      // Should have sent batch header with count
+      expect(sentMessages.some(m => m.text.includes('updates'))).toBe(true);
     });
 
-    it('should edit compacting notification with final content', async () => {
+    it('should edit batch header with combined content', async () => {
       await batcher.add('Message 1', 'normal');
       await batcher.add('Message 2', 'normal');
 
       await batcher.flush();
 
-      // Should have edited the compacting message
+      // Should have edited the message with combined content
       expect(editedMessages.length).toBeGreaterThan(0);
-      expect(editedMessages[0].text).toContain('Compacting complete');
+      expect(editedMessages[0].text).toContain('Message 1');
+      expect(editedMessages[0].text).toContain('Message 2');
     });
 
-    it('should show correct message count in compacting notification', async () => {
+    it('should show correct message count in batch header', async () => {
       await batcher.add('Msg 1', 'normal');
       await batcher.add('Msg 2', 'normal');
       await batcher.add('Msg 3', 'normal');
 
       await batcher.flush();
 
-      const compactingMsg = sentMessages.find(m => m.text.includes('Compacting'));
-      expect(compactingMsg.text).toContain('3 messages');
+      const batchMsg = sentMessages.find(m => m.text.includes('updates'));
+      expect(batchMsg.text).toContain('3 updates');
     });
 
-    it('should handle singular message count', async () => {
+    it('should send single message directly without batch header', async () => {
       await batcher.add('Single message', 'normal');
 
-      await batcher.flush();
+      const result = await batcher.flush();
 
-      const compactingMsg = sentMessages.find(m => m.text.includes('Compacting'));
-      expect(compactingMsg.text).toContain('1 message');
-      expect(compactingMsg.text).not.toContain('1 messages');
+      // Single message should be returned directly, no batch header
+      expect(result).toBe('Single message');
+      // No batch header should have been sent for single message
+      expect(sentMessages.filter(m => m.text.includes('updates')).length).toBe(0);
     });
   });
 
