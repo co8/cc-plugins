@@ -19,128 +19,17 @@ Multi-agent orchestration framework for complex software development projects. C
 
 ## `/swarm` (No Arguments)
 
-Smart project detection and continuation.
+Smart detection: Check branch (`feature/<name>`) → `docs/projects/` → `~/.claude/plans/` → prompt user.
 
-### Detection Flow
+**Detection priority**:
+1. Current branch `feature/<name>` → match project in `docs/projects/<name>/`
+2. List recent projects by modified date with status from CHANGELOG.md
+3. List plans from `~/.claude/plans/` available for conversion
+4. Offer new project with random name suggestions
 
-```
-/swarm
-  │
-  ├─► Check git branch
-  │   └─► feature/<n> → Extract project name
-  │
-  ├─► Check docs/projects/
-  │   └─► List recent projects by modified date
-  │
-  ├─► Check ~/.claude/plans/
-  │   └─► List recent plans available for conversion
-  │
-  └─► Decision:
-      ├─► Project identified → "Continue <project>? [Y/n]"
-      ├─► Multiple found → "Select project or create new"
-      ├─► Plans available → "Convert plan to project?"
-      └─► None found → "Create new project? Suggested: <n>"
-```
+**Project names**: Random from Barcelona region pool (rubi, sitges, mura, tiana, etc.)
 
-### Behavior
-
-1. **Branch detection**: If on `feature/<project-name>` branch, check for matching project in `docs/projects/<project-name>/`
-
-2. **Recent projects**: List projects from `docs/projects/` sorted by last modified:
-   ```
-   Recent projects:
-   1. zap-phoenix (modified: 2h ago) - Phase 2/4 in progress
-   2. atlas-sync (modified: 1d ago) - Complete, pending review
-   3. auth-refresh (modified: 3d ago) - Phase 1/3 in progress
-   
-   [1-3] Continue project | [n] New project | [q] Cancel
-   ```
-
-3. **Recent plans**: Check `~/.claude/plans/` for implementation plans that can be converted to swarm projects:
-   ```
-   Recent plans available for conversion:
-   1. scalable-forging-lovelace (3h ago) - "RailwayCard Enhancement Plan"
-   2. temporal-sleeping-ladybug (1d ago) - "Centralized Environment & Domain Configuration"
-   3. optimized-crunching-fountain (2d ago) - "API Rate Limiting Implementation"
-
-   [1-3] Convert to project | [s] Skip to projects | [n] New project
-   ```
-
-4. **New project suggestion**: If no projects found or user chooses new, offer 3 random names from the word pool:
-   ```
-   No active projects found.
-   Create new project?
-
-   Suggested names:
-     1. ember
-     2. prism
-     3. quill
-
-   [1-3] Select | [name] Custom name | [n] Cancel
-   ```
-
-### Project Name Word Pool
-
-Random selection from these names (Barcelona region & Vallès):
-
-```
-saba, terra, rubi, palau, caldes, barbera, caste, matade, vacar, ullast,
-rellin, gallifa, poliny, sentme, savall, vica, olesa, abrera, marto, collbato,
-monistrol, castellbell, navarcles, sallent, artes, santpedor, manresa, rajadell, fonoll, mura,
-mollet, grano, cardo, lica, paret, montme, montorn, martore, llinars, dosrius,
-canov, franqu, roca, bigues, riells, figar, tagam, aigue, seva, tona,
-premia, alella, tiana, mongat, cabrera, argentona, canet, arenys, caldetes, pineda,
-malgrat, palafo, tordera, blanes, vilassar, masnou, ocata, matarell, llavaneres, calella,
-gava, vilade, begues, cerve, palleja, corbera, molins, papiol, colbat, esparra,
-piera, masque, gelida, ordal, subirats, lavern, pachs, vila, sitges, garraf,
-olivella, canyelles, cubelles, vilanova, vendrell, calafell, cunit, segur, creixell
-```
-
-### Plan Conversion
-
-When converting a plan from `~/.claude/plans/` to a swarm project:
-
-1. **Parse plan file**: Extract title (first `#` heading), summary, file changes, and implementation steps
-2. **Generate project name**: Use plan filename or suggest from word pool
-3. **Auto-populate documents**:
-   - `PROJECT_PLAN.md` ← Plan title, summary, and goals
-   - `IMPLEMENTATION_PLAN.md` ← File changes, code snippets, verification steps
-   - `AGENT_SWARM_SPEC.md` ← Generate agents from implementation steps (one agent per logical unit of work)
-4. **Review generated spec**: Present the auto-generated agent breakdown for user approval before execution
-
-**Plan file format expected** (from Claude Code plan mode):
-```markdown
-# Plan Title
-
-## Overview/Summary
-Brief description...
-
-## Changes Summary / Files to Modify
-| File | Changes |
-|------|---------|
-| path/to/file.ts | Description of changes |
-
-## Implementation Order / Steps
-1. First step...
-2. Second step...
-
-## Verification
-- [ ] Test step 1
-- [ ] Test step 2
-```
-
-### Project Status Detection
-
-When listing projects, show status from `CHANGELOG.md`:
-- Parse last phase completed
-- Count agents done vs total
-- Show blocking issues if any
-
-```
-zap-phoenix: Phase 2 (3/4 agents) - Agent 2.3 in progress
-atlas-sync: Phase 4 ✅ - Pending code review
-auth-refresh: Phase 1 (1/2 agents) - Blocked: migration error
-```
+**Plan conversion**: Parse plan → auto-populate PROJECT_PLAN.md, IMPLEMENTATION_PLAN.md, AGENT_SWARM_SPEC.md → review before execution.
 
 ---
 
@@ -150,25 +39,9 @@ Initialize and execute a multi-agent development project.
 
 ### Phase 0: Project Setup
 
-1. **Create project structure**:
-   ```
-   docs/projects/<project-name>/
-   ├── PROJECT_PLAN.md
-   ├── IMPLEMENTATION_PLAN.md
-   ├── AGENT_SWARM_SPEC.md
-   ├── CODE_REVIEW.md
-   └── CHANGELOG.md
-   ```
-
-2. **Create feature branch & worktree**:
-   ```bash
-   git worktree add ../studioFE-<project-name> -b feature/<project-name>
-   ```
-
-3. **Supabase preview** (if DB changes needed):
-   ```bash
-   supabase branches create <project-name>
-   ```
+1. Create `docs/projects/<name>/` with: PROJECT_PLAN.md, IMPLEMENTATION_PLAN.md, AGENT_SWARM_SPEC.md, CODE_REVIEW.md, CHANGELOG.md
+2. Create worktree: `git worktree add ../<repo>-<name> -b feature/<name>`
+3. Supabase preview (if DB changes): `supabase branches create <name>`
 
 ### Phase 1: Planning (Sequential)
 
@@ -186,69 +59,9 @@ Generate all planning documents before implementation. See `references/templates
 - Phases with dependencies wait for blockers to complete
 - Use `Task` tool for parallel agent invocations
 
-**Progress display** (with ANSI colors):
-- **Pending**: Dim gray (`\x1b[2m` or `\x1b[90m`)
-- **In Progress**: Yellow (`\x1b[33m`)
-- **Complete**: Green (`\x1b[32m`)
-- Section titles turn green when all items in section are complete
+**Progress display**: See `references/templates.md` for colored box format, ANSI codes, and ASCII art variants.
 
-```
-┌─────────────────────────────────────────┐
-│  SWARM: <project-name>                  │
-├─────────────────────────────────────────┤
-│                                         │
-│  Phase 1: Foundation ✓                  │  ← Green (complete)
-│  ● Agent 1.1: Schema                    │  ← Green dot
-│                                         │
-│  Phase 2: Core [3/4]                    │  ← Yellow (in progress)
-│  ● Agent 2.1: API                       │  ← Green dot
-│  ● Agent 2.2: Services                  │  ← Green dot
-│  ◐ Agent 2.3: UI                        │  ← Yellow dot (in progress)
-│  ○ Agent 2.4: State                     │  ← Dim gray dot (pending)
-│                                         │
-│  Phase 3: Integration                   │  ← Dim gray (pending)
-│  ○ Agent 3.1: Page Integration          │  ← Dim gray dot
-│  ○ Agent 3.2: Navigation                │  ← Dim gray dot
-│                                         │
-└─────────────────────────────────────────┘
-
-    _____
-   / ____|
-  | (_____      ____ _ _ __ _ __ ___
-   \___ \ \ /\ / / _` | '__| '_ ` _ \
-   ____) \ V  V / (_| | |  | | | | | |
-  |_____/ \_/\_/ \__,_|_|  |_| |_| |_|
-                           [Phase 2/3]
-```
-
-**Status symbols**:
-| Symbol | Color | Meaning |
-|--------|-------|---------|
-| `●` | Green | Complete |
-| `◐` | Yellow | In Progress |
-| `○` | Dim Gray | Pending |
-
-**ASCII art variants** (rotate at end of each progress report):
-
-```
-     __
-    /  \  SWARM ACTIVE
-   | 🐝 | Phase 2 of 3
-    \__/  3 agents running
-```
-
-```
-   ╔═══════════════╗
-   ║  ◉ SWARM ◉    ║
-   ║  ▓▓▓▓░░ 67%   ║
-   ╚═══════════════╝
-```
-
-```
-  ┌──●──●──◐──○──┐
-  │   PROGRESS   │
-  └──────────────┘
-```
+**Status symbols**: `●` (green/complete), `◐` (yellow/in-progress), `○` (dim gray/pending)
 
 **Milestone commits** (after each phase):
 ```bash
@@ -282,102 +95,62 @@ Generate CODE_REVIEW.md with quality metrics, issues found, optimizations applie
 | `--from-phase=N` | Resume from specific phase |
 | `--agent=N.M` | Run single agent only |
 | `--from-plan=<name>` | Convert a specific plan file to project (e.g., `--from-plan=scalable-forging-lovelace`) |
+| `--resume` | Auto-detect last incomplete agent and resume from there |
+| `--max-agents=N` | Limit concurrent parallel agents (default: 4) |
+| `--graph` | Output agent dependency graph in Mermaid format |
 
 ---
 
 ## Supabase Database Deployment
 
-When a project uses Supabase preview branches, follow this workflow before merging. See `references/supabase-deployment.md` for complete details.
+If project uses Supabase preview branches, see `references/supabase-deployment.md` for the full deployment workflow including migration validation loops, advisor checks, and production deployment steps.
 
-### Deployment Flow
-
-```
-PREVIEW                              PRODUCTION
-───────                              ──────────
-1. Apply migrations                  6. Backup production
-2. Fix errors → loop until success   7. Apply consolidated migration
-3. Run security/perf advisors        8. Fix errors → loop until success
-4. Fix advisor issues → loop clean   9. Run advisors
-5. Consolidate migrations            10. Post-deploy backup + verify
-```
-
-### Quick Commands
-
-| Step | Command |
-|------|---------|
-| Apply migrations | `supabase db push --linked` |
-| Check diff | `supabase db diff --linked` |
-| Run advisors | Supabase MCP / Dashboard |
-| Backup (if script exists) | `./scripts/backup-db.sh production` |
-| Consolidate | `supabase db diff --linked -f consolidated` |
-
-### Validation Loops
-
-**Migration errors**: Fix and re-run until `supabase db push` succeeds with no errors.
-
-**Advisor issues**: Fix errors → warnings → info until all advisors pass clean.
-
-### Pre-Production Checklist
-
-```
-Preview:
-- [ ] Migrations: 0 errors
-- [ ] Security advisor: 0 errors, 0 warnings  
-- [ ] Performance advisor: 0 errors, 0 warnings
-- [ ] Consolidated migration reviewed
-
-Production:
-- [ ] Pre-deployment backup verified
-- [ ] Migration applied successfully
-- [ ] All advisor issues resolved
-- [ ] Post-deployment backup created
-- [ ] Smoke tests passing
-```
+**Quick ref**: `supabase db push --linked` → fix errors → run advisors → consolidate → deploy to production.
 
 ---
 
 ## Agent Design Principles
 
-### Parallelization Strategy
+**Parallelization**: Safe when different files/dirs, independent features, tests for completed work. Sequential for dependency chains (Schema→Types→API), base→composite components, core→integration.
 
-**Safe to parallelize**:
-- Agents working on different files/directories
-- Independent feature implementations
-- Test writing for completed features
+**Agent scope**: Single responsibility, own specific files (no overlap), define completion criteria, include validation.
 
-**Must be sequential**:
-- Schema → Types → API (dependency chain)
-- Base components → Composite components
-- Core logic → Integration tests
+**Communication**: IMPLEMENTATION_PLAN.md + type definitions (shared context), file system (deliverables), CHANGELOG.md (progress).
 
-### Agent Scope Guidelines
+### Agent Failure Protocol
 
-Each agent should:
-- Have a single, clear responsibility
-- Own specific files (no overlap)
-- Define completion criteria
-- Include validation steps
+| Failure | Action |
+|---------|--------|
+| **Timeout** (>15min) | Log to CHANGELOG, mark blocked, continue non-dependent, prompt user |
+| **Error** | Log, retry once, if fails pause and prompt, block dependents |
+| **File Conflict** | Halt agents, alert user, request resolution |
 
-### Communication Protocol
+**Recovery**: `/swarm --resume` (auto-resume) | `/swarm --agent=2.3 --retry` | `/swarm --skip-agent=2.3`
 
-Agents communicate via:
-1. **Shared context**: IMPLEMENTATION_PLAN.md, type definitions
-2. **File system**: Completed deliverables available to dependent agents
-3. **CHANGELOG.md**: Real-time progress updates
+---
+
+## Project Archival
+
+After merge: move docs to `docs/archive/`, remove worktree, delete feature branch, clean Supabase preview if used.
+
+```bash
+mv docs/projects/<name> docs/archive/<name>
+git worktree remove ../<repo>-<name>
+git branch -d feature/<name>
+supabase branches delete <name>  # if applicable
+```
 
 ---
 
 ## Best Practices
 
-1. **Plan thoroughly before execution** - Investment in planning prevents rework
-2. **Keep agents focused** - One responsibility per agent
-3. **Define clear interfaces** - Types and contracts before implementation
-4. **Commit frequently** - Milestone commits after each phase
-5. **Validate continuously** - Run tests after each agent completes
-6. **Document decisions** - Update CODE_REVIEW.md with rationale
+Plan thoroughly → Keep agents focused → Define interfaces first → Commit per phase → Validate continuously → Document decisions in CODE_REVIEW.md
 
 ## Reference Files
 
-- `references/templates.md` - Document templates for all project files
-- `references/agent-patterns.md` - Common agent configurations and patterns
-- `references/supabase-deployment.md` - Database deployment workflow with validation loops
+| File | Load When |
+|------|-----------|
+| `references/templates.md` | Always (document templates) |
+| `references/agent-patterns.md` | Always (agent configurations) |
+| `references/supabase-deployment.md` | DB migrations present |
+| `references/progress-art.md` | Display customization |

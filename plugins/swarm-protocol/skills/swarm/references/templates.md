@@ -137,210 +137,38 @@ See `AGENT_SWARM_SPEC.md` for detailed phase breakdown.
 
 ---
 
-## Phase 1: Foundation (Sequential)
+[Agent definitions go here - see `references/agent-patterns.md` for patterns]
 
-### Agent 1.1: Database Schema
+Each agent definition uses this format:
 
-**Role**: Create database schema and migrations
+### Agent X.Y: <Name>
+
+**Role**: [Single sentence describing responsibility]
 
 **Files**:
-- `supabase/migrations/YYYYMMDDHHmmss_<n>.sql`
+- `path/to/file1.ts`
+- `path/to/file2.ts`
 
 **Deliverables**:
-- [ ] Migration file created
-- [ ] Types match schema
-- [ ] Rollback tested locally
+- [ ] Deliverable 1
+- [ ] Deliverable 2
 
 **Validation**:
-```bash
-supabase db reset
-supabase gen types typescript --local
+\`\`\`bash
+<command to verify completion>
+\`\`\`
+
+**Depends on**: [Agent X.Z] (or "None")
 ```
 
----
-
-### Agent 1.2: Type Definitions
-
-**Role**: Generate TypeScript types from schema
-
-**Files**:
-- `src/types/<feature>.types.ts`
-- `src/lib/database.types.ts` (update)
-
-**Deliverables**:
-- [ ] All entity types defined
-- [ ] API request/response types
-- [ ] Zod schemas for validation
-
-**Validation**:
-```bash
-npm run typecheck
-```
-
-**Depends on**: Agent 1.1
-
----
-
-## Phase 2: Core Implementation (Parallel)
-
-### Agent 2.1: API Routes
-
-**Role**: Implement REST API endpoints
-
-**Files**:
-- `src/app/api/<feature>/route.ts`
-- `src/app/api/<feature>/[id]/route.ts`
-
-**Deliverables**:
-- [ ] CRUD endpoints implemented
-- [ ] Input validation
-- [ ] Error handling
-- [ ] Auth middleware
-
-**Validation**:
-```bash
-npm run test -- api/<feature>
-```
-
----
-
-### Agent 2.2: Service Layer
-
-**Role**: Business logic and data access
-
-**Files**:
-- `src/services/<feature>.service.ts`
-- `src/lib/supabase/<feature>.ts`
-
-**Deliverables**:
-- [ ] Service class/functions
-- [ ] Supabase queries
-- [ ] Error types
-
-**Validation**:
-```bash
-npm run test -- services/<feature>
-```
-
----
-
-### Agent 2.3: UI Components
-
-**Role**: React components for feature
-
-**Files**:
-- `src/components/<feature>/`
-- `src/hooks/use<Feature>.ts`
-
-**Deliverables**:
-- [ ] List component
-- [ ] Form component
-- [ ] Detail view
-- [ ] Custom hooks
-
-**Validation**:
-```bash
-npm run lint
-npm run typecheck
-```
-
----
-
-### Agent 2.4: State Management
-
-**Role**: Client-side state and caching
-
-**Files**:
-- `src/stores/<feature>.store.ts`
-- `src/queries/<feature>.queries.ts`
-
-**Deliverables**:
-- [ ] Zustand/Jotai store (if needed)
-- [ ] React Query hooks
-- [ ] Optimistic updates
-
-**Validation**:
-```bash
-npm run typecheck
-```
-
----
-
-## Phase 3: Integration (Partial Parallel)
-
-### Agent 3.1: Page Integration
-
-**Role**: Wire components into pages
-
-**Files**:
-- `src/app/(dashboard)/<feature>/page.tsx`
-- `src/app/(dashboard)/<feature>/[id]/page.tsx`
-
-**Deliverables**:
-- [ ] Page routes created
-- [ ] Components integrated
-- [ ] Loading/error states
-
-**Depends on**: Agents 2.1, 2.2, 2.3, 2.4
-
----
-
-### Agent 3.2: Navigation & Layout
-
-**Role**: Add feature to navigation
-
-**Files**:
-- `src/components/layout/sidebar.tsx` (update)
-- `src/lib/navigation.ts` (update)
-
-**Deliverables**:
-- [ ] Sidebar links added
-- [ ] Breadcrumbs configured
-- [ ] Access control applied
-
-**Depends on**: Agent 3.1
-
----
-
-## Phase 4: Hardening (Sequential)
-
-### Agent 4.1: Testing
-
-**Role**: Comprehensive test coverage
-
-**Files**:
-- `src/__tests__/<feature>/`
-- `e2e/<feature>.spec.ts`
-
-**Deliverables**:
-- [ ] Unit tests (>80% coverage)
-- [ ] Integration tests
-- [ ] E2E happy path
-
-**Validation**:
-```bash
-npm run test -- --coverage
-npm run test:e2e
-```
-
----
-
-### Agent 4.2: Documentation
-
-**Role**: Update documentation
-
-**Files**:
-- `docs/api/<feature>.md`
-- `README.md` (update if needed)
-- `CHANGELOG.md`
-
-**Deliverables**:
-- [ ] API documentation
-- [ ] Usage examples
-- [ ] Changelog entry
-
-**Depends on**: Agent 4.1
-```
+**Pattern selection**: Choose from `references/agent-patterns.md`:
+- Full-Stack Feature (10 agents) - CRUD, dashboards
+- Full-Stack + Supabase (12 agents) - With DB deployment
+- API-Only (7 agents) - Backend services
+- UI Refactor (10 agents) - Frontend overhauls
+- Data Migration (10 agents) - Schema changes
+- Integration (10 agents) - Third-party services
+- Microservice (13 agents) - New standalone services
 
 ---
 
@@ -462,81 +290,8 @@ Started: YYYY-MM-DD HH:MM
 
 ---
 
-## Progress Display Format
+## Progress Display
 
-When outputting progress during execution, use this colored box format:
+For ASCII art, progress bars, and ANSI color codes, see `references/progress-art.md`.
 
-```
-┌─────────────────────────────────────────┐
-│  SWARM: <project-name>                  │
-├─────────────────────────────────────────┤
-│                                         │
-│  Phase 1: Foundation ✓                  │  ← \x1b[32m (green - complete)
-│  ● Agent 1.1: Schema                    │  ← green dot
-│                                         │
-│  Phase 2: Core [3/4]                    │  ← \x1b[33m (yellow - active)
-│  ● Agent 2.1: API                       │  ← green dot (complete)
-│  ● Agent 2.2: Services                  │  ← green dot (complete)
-│  ◐ Agent 2.3: UI                        │  ← yellow dot (in progress)
-│  ○ Agent 2.4: State                     │  ← \x1b[90m dim gray (pending)
-│                                         │
-│  Phase 3: Integration                   │  ← dim gray (pending)
-│  ○ Agent 3.1: Page Integration          │
-│  ○ Agent 3.2: Navigation                │
-│                                         │
-└─────────────────────────────────────────┘
-
-    _____
-   / ____|
-  | (_____      ____ _ _ __ _ __ ___
-   \___ \ \ /\ / / _` | '__| '_ ` _ \
-   ____) \ V  V / (_| | |  | | | | | |
-  |_____/ \_/\_/ \__,_|_|  |_| |_| |_|
-                           [Phase 2/3]
-```
-
-### Color Codes (ANSI)
-| Status | Symbol | ANSI Code | Reset |
-|--------|--------|-----------|-------|
-| Complete | `●` | `\x1b[32m` (green) | `\x1b[0m` |
-| In Progress | `◐` | `\x1b[33m` (yellow) | `\x1b[0m` |
-| Pending | `○` | `\x1b[90m` (dim gray) | `\x1b[0m` |
-
-### ASCII Art Pool (rotate each update)
-
-**Bee**:
-```
-     __
-    /  \  SWARM ACTIVE
-   | 🐝 | Phase N of M
-    \__/  X agents running
-```
-
-**Progress Bar**:
-```
-   ╔═══════════════╗
-   ║  ◉ SWARM ◉    ║
-   ║  ▓▓▓▓░░ 67%   ║
-   ╚═══════════════╝
-```
-
-**Dots**:
-```
-  ┌──●──●──◐──○──┐
-  │   PROGRESS   │
-  └──────────────┘
-```
-
-**Wave**:
-```
-  ~~ SWARM ~~~~~~~~~~~
-  ≋≋≋≋≋≋▸ 4/6 agents
-  ~~~~~~~~~~~~~~~~~~~~~~
-```
-
-**Hexagon**:
-```
-    ⬡ ⬡ ⬡
-   ⬡ ⬢ ⬡  SWARM
-    ⬡ ⬡ ⬡  Phase 2
-```
+**Quick reference**: `●` (green/done), `◐` (yellow/active), `○` (dim gray/pending)

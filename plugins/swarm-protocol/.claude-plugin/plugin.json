@@ -1,6 +1,6 @@
 {
   "name": "swarm-protocol",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Multi-agent development orchestration - coordinate parallel workstreams, manage project documentation, and automate milestone commits",
   "author": {
     "name": "Enrique R. Grullon",

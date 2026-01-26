@@ -52,6 +52,9 @@ Suggested names:
 | `--dry-run` | Generate plans only |
 | `--from-phase=N` | Resume from phase |
 | `--agent=N.M` | Run single agent |
+| `--resume` | Auto-resume from last failure |
+| `--max-agents=N` | Limit parallel agents (default: 4) |
+| `--graph` | Output Mermaid dependency graph |
 
 ## Project Structure
 
