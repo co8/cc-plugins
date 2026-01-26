@@ -71,7 +71,7 @@ setInterval(() => {
 const server = new Server(
   {
     name: "telegram-bot",
-    version: "0.6.0",
+    version: "1.6.0",
   },
   {
     capabilities: {

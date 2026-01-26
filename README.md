@@ -48,7 +48,7 @@ npx skills add co8/cc-plugins/swarm-protocol
 
 ## 📦 Available Plugins
 
-### [Telegram Plugin](./plugins/telegram-plugin) ![Version](https://img.shields.io/badge/version-0.6.0-blue)
+### [Telegram Integration](./plugins/telegram-integration) ![Version](https://img.shields.io/badge/version-1.6.0-blue)
 
 **Remote interaction with Claude Code via Telegram**
 

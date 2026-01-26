@@ -13,10 +13,10 @@
   },
   "plugins": [
     {
-      "name": "telegram-plugin",
-      "source": "./plugins/telegram-plugin",
+      "name": "telegram-integration",
+      "source": "./plugins/telegram-integration",
       "description": "Remote interaction with Claude Code via Telegram - receive task updates, approval requests, and control sessions from your phone",
-      "version": "0.6.0",
+      "version": "1.6.0",
       "author": {
         "name": "Enrique R Grullon",
         "email": "e@co8.com"
@@ -31,7 +31,7 @@
         "workflow"
       ],
       "repository": "https://github.com/co8/cc-plugins",
-      "homepage": "https://github.com/co8/cc-plugins/tree/main/plugins/telegram-plugin"
+      "homepage": "https://github.com/co8/cc-plugins/tree/main/plugins/telegram-integration"
     }
   ],
   "skills": [
