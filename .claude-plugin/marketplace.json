@@ -6,7 +6,7 @@
     "url": "https://co8.com"
   },
   "metadata": {
-    "description": "Claude Code plugins",
+    "description": "Claude Code plugins and skills",
     "version": "1.0.0",
     "homepage": "https://github.com/co8/cc-plugins",
     "repository": "https://github.com/co8/cc-plugins"
@@ -16,7 +16,7 @@
       "name": "telegram-plugin",
       "source": "./plugins/telegram-plugin",
       "description": "Remote interaction with Claude Code via Telegram - receive task updates, approval requests, and control sessions from your phone",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "author": {
         "name": "Enrique R Grullon",
         "email": "e@co8.com"
@@ -32,34 +32,14 @@
       ],
       "repository": "https://github.com/co8/cc-plugins",
       "homepage": "https://github.com/co8/cc-plugins/tree/main/plugins/telegram-plugin"
-    },
-    {
-      "name": "swarm-protocol",
-      "source": "./plugins/swarm-protocol",
-      "description": "Multi-agent development orchestration - coordinate parallel workstreams, manage project documentation, and automate milestone commits",
-      "version": "1.0.0",
-      "author": {
-        "name": "Enrique R Grullon",
-        "email": "e@co8.com"
-      },
-      "license": "MIT",
-      "keywords": [
-        "swarm",
-        "multi-agent",
-        "orchestration",
-        "parallel",
-        "workflow",
-        "automation",
-        "project-management"
-      ],
-      "repository": "https://github.com/co8/cc-plugins",
-      "homepage": "https://github.com/co8/cc-plugins/tree/main/plugins/swarm-protocol"
-    },
+    }
+  ],
+  "skills": [
     {
       "name": "secret-sauce",
-      "source": "./plugins/secret-sauce",
+      "source": "./skills/secret-sauce",
       "description": "Best practices, rules, and templates extracted from real production projects",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "author": {
         "name": "Enrique R Grullon",
         "email": "e@co8.com"
@@ -76,7 +56,29 @@
         "workflow"
       ],
       "repository": "https://github.com/co8/cc-plugins",
-      "homepage": "https://github.com/co8/cc-plugins/tree/main/plugins/secret-sauce"
+      "homepage": "https://github.com/co8/cc-plugins/tree/main/skills/secret-sauce"
+    },
+    {
+      "name": "swarm",
+      "source": "./skills/swarm",
+      "description": "Multi-agent development orchestration - coordinate parallel workstreams, manage project documentation, and automate milestone commits",
+      "version": "1.2.0",
+      "author": {
+        "name": "Enrique R Grullon",
+        "email": "e@co8.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "swarm",
+        "multi-agent",
+        "orchestration",
+        "parallel",
+        "workflow",
+        "automation",
+        "project-management"
+      ],
+      "repository": "https://github.com/co8/cc-plugins",
+      "homepage": "https://github.com/co8/cc-plugins/tree/main/skills/swarm"
     }
   ]
 }
