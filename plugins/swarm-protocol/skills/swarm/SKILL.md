@@ -186,17 +186,68 @@ Generate all planning documents before implementation. See `references/templates
 - Phases with dependencies wait for blockers to complete
 - Use `Task` tool for parallel agent invocations
 
-**Progress display**:
+**Progress display** (with ANSI colors):
+- **Pending**: Dim gray (`\x1b[2m` or `\x1b[90m`)
+- **In Progress**: Yellow (`\x1b[33m`)
+- **Complete**: Green (`\x1b[32m`)
+- Section titles turn green when all items in section are complete
+
 ```
-🚀 Swarm: <project-name>
-├── Phase 1: Foundation ✅
-│   └── Agent 1.1: Schema ✅
-├── Phase 2: Core (3/4)
-│   ├── Agent 2.1: API ✅
-│   ├── Agent 2.2: Services ✅
-│   ├── Agent 2.3: UI 🔄
-│   └── Agent 2.4: State ⏳
-└── Phase 3: Integration ⏳
+┌─────────────────────────────────────────┐
+│  SWARM: <project-name>                  │
+├─────────────────────────────────────────┤
+│                                         │
+│  Phase 1: Foundation ✓                  │  ← Green (complete)
+│  ● Agent 1.1: Schema                    │  ← Green dot
+│                                         │
+│  Phase 2: Core [3/4]                    │  ← Yellow (in progress)
+│  ● Agent 2.1: API                       │  ← Green dot
+│  ● Agent 2.2: Services                  │  ← Green dot
+│  ◐ Agent 2.3: UI                        │  ← Yellow dot (in progress)
+│  ○ Agent 2.4: State                     │  ← Dim gray dot (pending)
+│                                         │
+│  Phase 3: Integration                   │  ← Dim gray (pending)
+│  ○ Agent 3.1: Page Integration          │  ← Dim gray dot
+│  ○ Agent 3.2: Navigation                │  ← Dim gray dot
+│                                         │
+└─────────────────────────────────────────┘
+
+    _____
+   / ____|
+  | (_____      ____ _ _ __ _ __ ___
+   \___ \ \ /\ / / _` | '__| '_ ` _ \
+   ____) \ V  V / (_| | |  | | | | | |
+  |_____/ \_/\_/ \__,_|_|  |_| |_| |_|
+                           [Phase 2/3]
+```
+
+**Status symbols**:
+| Symbol | Color | Meaning |
+|--------|-------|---------|
+| `●` | Green | Complete |
+| `◐` | Yellow | In Progress |
+| `○` | Dim Gray | Pending |
+
+**ASCII art variants** (rotate at end of each progress report):
+
+```
+     __
+    /  \  SWARM ACTIVE
+   | 🐝 | Phase 2 of 3
+    \__/  3 agents running
+```
+
+```
+   ╔═══════════════╗
+   ║  ◉ SWARM ◉    ║
+   ║  ▓▓▓▓░░ 67%   ║
+   ╚═══════════════╝
+```
+
+```
+  ┌──●──●──◐──○──┐
+  │   PROGRESS   │
+  └──────────────┘
 ```
 
 **Milestone commits** (after each phase):

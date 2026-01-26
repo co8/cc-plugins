@@ -459,3 +459,84 @@ Started: YYYY-MM-DD HH:MM
 **Resolution**: Updated interface in types file
 **Action**: Retry successful
 ```
+
+---
+
+## Progress Display Format
+
+When outputting progress during execution, use this colored box format:
+
+```
+┌─────────────────────────────────────────┐
+│  SWARM: <project-name>                  │
+├─────────────────────────────────────────┤
+│                                         │
+│  Phase 1: Foundation ✓                  │  ← \x1b[32m (green - complete)
+│  ● Agent 1.1: Schema                    │  ← green dot
+│                                         │
+│  Phase 2: Core [3/4]                    │  ← \x1b[33m (yellow - active)
+│  ● Agent 2.1: API                       │  ← green dot (complete)
+│  ● Agent 2.2: Services                  │  ← green dot (complete)
+│  ◐ Agent 2.3: UI                        │  ← yellow dot (in progress)
+│  ○ Agent 2.4: State                     │  ← \x1b[90m dim gray (pending)
+│                                         │
+│  Phase 3: Integration                   │  ← dim gray (pending)
+│  ○ Agent 3.1: Page Integration          │
+│  ○ Agent 3.2: Navigation                │
+│                                         │
+└─────────────────────────────────────────┘
+
+    _____
+   / ____|
+  | (_____      ____ _ _ __ _ __ ___
+   \___ \ \ /\ / / _` | '__| '_ ` _ \
+   ____) \ V  V / (_| | |  | | | | | |
+  |_____/ \_/\_/ \__,_|_|  |_| |_| |_|
+                           [Phase 2/3]
+```
+
+### Color Codes (ANSI)
+| Status | Symbol | ANSI Code | Reset |
+|--------|--------|-----------|-------|
+| Complete | `●` | `\x1b[32m` (green) | `\x1b[0m` |
+| In Progress | `◐` | `\x1b[33m` (yellow) | `\x1b[0m` |
+| Pending | `○` | `\x1b[90m` (dim gray) | `\x1b[0m` |
+
+### ASCII Art Pool (rotate each update)
+
+**Bee**:
+```
+     __
+    /  \  SWARM ACTIVE
+   | 🐝 | Phase N of M
+    \__/  X agents running
+```
+
+**Progress Bar**:
+```
+   ╔═══════════════╗
+   ║  ◉ SWARM ◉    ║
+   ║  ▓▓▓▓░░ 67%   ║
+   ╚═══════════════╝
+```
+
+**Dots**:
+```
+  ┌──●──●──◐──○──┐
+  │   PROGRESS   │
+  └──────────────┘
+```
+
+**Wave**:
+```
+  ~~ SWARM ~~~~~~~~~~~
+  ≋≋≋≋≋≋▸ 4/6 agents
+  ~~~~~~~~~~~~~~~~~~~~~~
+```
+
+**Hexagon**:
+```
+    ⬡ ⬡ ⬡
+   ⬡ ⬢ ⬡  SWARM
+    ⬡ ⬡ ⬡  Phase 2
+```
