@@ -9,11 +9,11 @@ Multi-agent orchestration framework for complex software development projects. C
 
 ## Commands
 
-| Command | Purpose |
-|---------|---------|
-| `/swarm-protocol-protocol <project-name>` | Initialize new project with full planning phase |
-| `/swarm-protocol-protocol` | Continue existing project, convert a plan, or start new |
-| `/swarm-protocol-protocol --from-plan=<name>` | Convert a specific plan file to swarm project |
+| Command                                       | Purpose                                                 |
+| --------------------------------------------- | ------------------------------------------------------- |
+| `/swarm-protocol-protocol <project-name>`     | Initialize new project with full planning phase         |
+| `/swarm-protocol-protocol`                    | Continue existing project, convert a plan, or start new |
+| `/swarm-protocol-protocol --from-plan=<name>` | Convert a specific plan file to swarm project           |
 
 ---
 
@@ -53,6 +53,8 @@ Generate all planning documents before implementation. See `references/templates
 3. AGENT_SWARM_SPEC.md → Phase breakdown, agent definitions, parallelization strategy
 
 ### Phase 2-N: Execution
+
+#### NOTE: FULL EXECUTION, MAXIMUM PARALLELIZATION
 
 **Parallelization rules**:
 - Agents within a phase run parallel when no file conflicts exist
@@ -119,18 +121,18 @@ Validate that all repairs are correct and the project is ready for merge.
 
 ### Options
 
-| Flag | Purpose |
-|------|---------|
-| `--skip-worktree` | Use current branch instead of creating worktree |
-| `--skip-preview` | Skip Supabase preview branch creation |
-| `--phases=1,2` | Run only specific phases |
-| `--dry-run` | Generate plans only, no execution |
-| `--from-phase=N` | Resume from specific phase |
-| `--agent=N.M` | Run single agent only |
+| Flag                 | Purpose                                                                                 |
+| -------------------- | --------------------------------------------------------------------------------------- |
+| `--skip-worktree`    | Use current branch instead of creating worktree                                         |
+| `--skip-preview`     | Skip Supabase preview branch creation                                                   |
+| `--phases=1,2`       | Run only specific phases                                                                |
+| `--dry-run`          | Generate plans only, no execution                                                       |
+| `--from-phase=N`     | Resume from specific phase                                                              |
+| `--agent=N.M`        | Run single agent only                                                                   |
 | `--from-plan=<name>` | Convert a specific plan file to project (e.g., `--from-plan=scalable-forging-lovelace`) |
-| `--resume` | Auto-detect last incomplete agent and resume from there |
-| `--max-agents=N` | Limit concurrent parallel agents (default: 4) |
-| `--graph` | Output agent dependency graph in Mermaid format |
+| `--resume`           | Auto-detect last incomplete agent and resume from there                                 |
+| `--max-agents=N`     | Limit concurrent parallel agents (default: 4)                                           |
+| `--graph`            | Output agent dependency graph in Mermaid format                                         |
 
 ---
 
@@ -152,11 +154,11 @@ If project uses Supabase preview branches, see `references/supabase-deployment.m
 
 ### Agent Failure Protocol
 
-| Failure | Action |
-|---------|--------|
+| Failure              | Action                                                              |
+| -------------------- | ------------------------------------------------------------------- |
 | **Timeout** (>15min) | Log to CHANGELOG, mark blocked, continue non-dependent, prompt user |
-| **Error** | Log, retry once, if fails pause and prompt, block dependents |
-| **File Conflict** | Halt agents, alert user, request resolution |
+| **Error**            | Log, retry once, if fails pause and prompt, block dependents        |
+| **File Conflict**    | Halt agents, alert user, request resolution                         |
 
 **Recovery**: `/swarm-protocol --resume` (auto-resume) | `/swarm-protocol-protocol --agent=2.3 --retry` | `/swarm-protocol-protocol --skip-agent=2.3`
 
@@ -181,9 +183,9 @@ Plan thoroughly → Keep agents focused → Define interfaces first → Commit p
 
 ## Reference Files
 
-| File | Load When |
-|------|-----------|
-| `references/templates.md` | Always (document templates) |
-| `references/agent-patterns.md` | Always (agent configurations) |
-| `references/supabase-deployment.md` | DB migrations present |
-| `references/progress-art.md` | Display customization |
+| File                                | Load When                     |
+| ----------------------------------- | ----------------------------- |
+| `references/templates.md`           | Always (document templates)   |
+| `references/agent-patterns.md`      | Always (agent configurations) |
+| `references/supabase-deployment.md` | DB migrations present         |
+| `references/progress-art.md`        | Display customization         |
