@@ -44,7 +44,9 @@
 |-----------|-------------|--------|
 | Planning Complete | | ⏳ |
 | Phase 1 Complete | | ⏳ |
-| Final Review | | ⏳ |
+| Code Review | | ⏳ |
+| Review Repair | | ⏳ |
+| Final Verification | | ⏳ |
 
 ## Stakeholders
 
@@ -199,11 +201,11 @@ Each agent definition uses this format:
 
 ## Issues Found
 
-| Severity | Issue | Resolution |
-|----------|-------|------------|
-| High | [Issue] | [How resolved] |
-| Medium | [Issue] | [How resolved] |
-| Low | [Issue] | [How resolved] |
+| Severity | Issue | Status | Resolution |
+|----------|-------|--------|------------|
+| High | [Issue] | ✅ Fixed / ⏳ Pending | [How resolved] |
+| Medium | [Issue] | ✅ Fixed / ⏳ Pending | [How resolved] |
+| Low | [Issue] | ✅ Fixed / ⏳ Pending | [How resolved] |
 
 ## Optimizations Applied
 
@@ -219,6 +221,19 @@ Each agent definition uses this format:
 - [ ] Rate limiting configured
 - [ ] Sensitive data handling
 
+## Suggestions & Nits
+
+| Type | Description | Status |
+|------|-------------|--------|
+| Suggestion | [Code improvement suggestion] | ✅ Applied / ⏳ Pending |
+| Nit | [Minor style or formatting issue] | ✅ Applied / ⏳ Pending |
+
+## Enhancements
+
+| Enhancement | Description | Status |
+|-------------|-------------|--------|
+| [Enhancement 1] | [Better types, edge cases, UX improvements] | ✅ Applied / ⏳ Pending |
+
 ## Recommendations
 
 ### Immediate (Before Merge)
@@ -233,7 +248,8 @@ Each agent definition uses this format:
 ## Approval
 
 - [ ] Code review complete
-- [ ] Tests passing
+- [ ] All issues resolved (Review Repair)
+- [ ] Tests passing (Verify)
 - [ ] Documentation updated
 - [ ] Ready for merge
 ```
@@ -276,6 +292,40 @@ Started: YYYY-MM-DD HH:MM
 - [x] Agent 2.2: Service Layer (commit: `jkl3456`)
 - [ ] Agent 2.3: UI Components (in progress...)
 - [ ] Agent 2.4: State Management (queued)
+
+---
+
+### Phase Review: Code Review
+Started: YYYY-MM-DD HH:MM
+
+- [ ] CODE_REVIEW.md generated
+  - X issues found (Y high, Z medium, W low)
+  - N suggestions/nits documented
+  - M enhancements identified
+
+---
+
+### Phase Repair: Review Repair
+Started: YYYY-MM-DD HH:MM
+
+- [ ] High-severity issues resolved (X/Y)
+- [ ] Medium-severity issues resolved (X/Y)
+- [ ] Low-severity issues resolved (X/Y)
+- [ ] Recommendations implemented (X/Y)
+- [ ] Suggestions & nits applied (X/Y)
+- [ ] Enhancements added (X/Y)
+
+---
+
+### Phase Verify: Final Verification
+Started: YYYY-MM-DD HH:MM
+
+- [ ] Tests passing
+- [ ] Typecheck passing
+- [ ] Lint passing
+- [ ] No regressions found
+- [ ] CODE_REVIEW.md fully resolved
+- [ ] Project CLAUDE.md updated
 
 ---
 

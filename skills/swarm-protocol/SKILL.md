@@ -74,15 +74,48 @@ git commit -m "feat(<project>): complete phase N - <description>
 Co-Authored-By: Claude Code <noreply@anthropic.com>"
 ```
 
-### Phase Final: Review
+### Phase Review: Code Review
 
-Generate CODE_REVIEW.md with quality metrics, issues found, optimizations applied.
+Generate CODE_REVIEW.md with quality metrics, issues found, and recommendations.
 
-**Final steps**:
+**Review steps**:
+1. Analyze all code changes across phases for quality, security, performance, and style
+2. Generate CODE_REVIEW.md with issues categorized by severity (High/Medium/Low)
+3. Document recommendations (Immediate, Short-term, Long-term)
+4. Document suggested enhancements and nits
+5. Commit CODE_REVIEW.md
+
+### Phase Repair: Review Repair
+
+Resolve all issues, implement recommendations, and apply enhancements found during review.
+
+**Repair steps**:
+1. **High-severity issues**: Fix all critical bugs, security vulnerabilities, and breaking issues
+2. **Medium-severity issues**: Resolve performance problems, missing validation, incomplete error handling
+3. **Low-severity issues**: Fix code style violations, naming inconsistencies, minor improvements
+4. **Recommendations (Immediate)**: Implement all "Before Merge" recommendations from CODE_REVIEW.md
+5. **Suggestions & nits**: Apply code suggestions, improve readability, clean up dead code
+6. **Enhancements**: Add small enhancements identified during review (better types, missing edge cases, improved UX)
+7. Update CODE_REVIEW.md — mark all resolved issues with resolution details
+8. Commit all repair changes
+
+**Repair rules**:
+- Work through issues by severity: High → Medium → Low → Recommendations → Nits → Enhancements
+- Each fix must not introduce new issues
+- Update the `Resolution` column in CODE_REVIEW.md for every addressed item
+- If a fix requires significant refactoring, document the trade-off and proceed
+
+### Phase Verify: Final Verification
+
+Validate that all repairs are correct and the project is ready for merge.
+
+**Verification steps**:
 1. `npm run test && npm run typecheck && npm run lint`
-2. Update project CLAUDE.md
-3. **If Supabase preview used**: Execute database deployment workflow (see below)
-4. Final commit with review summary
+2. Re-review repaired code to confirm no regressions
+3. Verify all CODE_REVIEW.md issues marked as resolved
+4. Update project CLAUDE.md
+5. **If Supabase preview used**: Execute database deployment workflow (see below)
+6. Final commit with verification summary
 
 ### Options
 
@@ -144,7 +177,7 @@ supabase branches delete <name>  # if applicable
 
 ## Best Practices
 
-Plan thoroughly → Keep agents focused → Define interfaces first → Commit per phase → Validate continuously → Document decisions in CODE_REVIEW.md
+Plan thoroughly → Keep agents focused → Define interfaces first → Commit per phase → Review all changes → Repair all issues → Verify before merge → Document decisions in CODE_REVIEW.md
 
 ## Reference Files
 
