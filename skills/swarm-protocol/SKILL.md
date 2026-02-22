@@ -43,6 +43,42 @@ Initialize and execute a multi-agent development project.
 2. Create worktree: `git worktree add ../<repo>-<name> -b feature/<name>`
 3. Supabase preview (if DB changes): `supabase branches create <name>`
 
+### swarm-status.json Management (MANDATORY)
+
+**CRITICAL**: `swarm-status.json` MUST be created at Phase 0 and updated at EVERY state transition. The ScopeTUI Swarm Monitor (`scopetui --swarm`) depends on this file being accurate. Stale status = broken monitoring.
+
+**Location**: `docs/projects/<name>/swarm-status.json` inside the **worktree** (not master).
+
+**Full schema**: See `references/swarm-status-schema.md` for field reference, examples, and validated formats.
+
+**Update at every transition — not just at the end**:
+1. **Phase 0**: Create `swarm-status.json` with all phases/agents from AGENT_SWARM_SPEC.md, all `pending`
+2. **Phase starts**: Set phase `status: "running"`, update `currentPhaseId`
+3. **Agent dispatched**: Set agent `status: "running"`, `startedAt`
+4. **Agent completes**: Set agent `status: "completed"`, `completedAt`
+5. **Phase completes**: Set phase `status: "completed"`, advance `currentPhaseId`
+6. **Agent fails**: Set agent `status: "failed"`, add `error` event, set dependents to `blocked`
+7. **Project completes**: ALL phases `"completed"`, update `updatedAt`
+8. **Every update**: Update `updatedAt` timestamp
+
+**Atomic write**: Write to `.swarm-status.json.tmp`, then `mv` to `swarm-status.json`.
+
+**Minimum viable format** (TUI validates only `phases` array):
+```json
+{
+  "project": "<name>",
+  "branch": "feature/<name>",
+  "currentPhaseId": "<active-phase-id>",
+  "phases": [
+    {
+      "id": "1", "name": "Setup", "status": "completed",
+      "agents": [{ "id": "1.1", "name": "Types", "status": "completed" }]
+    }
+  ],
+  "updatedAt": "<ISO 8601>"
+}
+```
+
 ### Phase 1: Planning (Sequential)
 
 Generate all planning documents before implementation. See `references/templates.md` for document templates.
