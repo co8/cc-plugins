@@ -112,22 +112,19 @@ git commit -m "feat(<project>): complete phase N - <description>
 Co-Authored-By: Claude Code <noreply@anthropic.com>"
 ```
 
-### Phase Review: Code Review
+### Phase Review & Repair: Code Review & Repair
 
-Generate CODE_REVIEW.md with quality metrics, issues found, and recommendations.
+Combined phase: review all changes, then immediately fix all issues found.
+
+**In swarm-status.json**, this is a single phase with id `"review-repair"` and name `"Code Review & Repair"`, containing two agents: `R.1 Code Review` and `F.1 Repair`.
 
 **Review steps**:
 1. Analyze all code changes across phases for quality, security, performance, and style
 2. Generate CODE_REVIEW.md with issues categorized by severity (High/Medium/Low)
 3. Document recommendations (Immediate, Short-term, Long-term)
 4. Document suggested enhancements and nits
-5. Commit CODE_REVIEW.md
 
-### Phase Repair: Review Repair
-
-Resolve all issues, implement recommendations, and apply enhancements found during review.
-
-**Repair steps**:
+**Repair steps** (immediately after review):
 1. **High-severity issues**: Fix all critical bugs, security vulnerabilities, and breaking issues
 2. **Medium-severity issues**: Resolve performance problems, missing validation, incomplete error handling
 3. **Low-severity issues**: Fix code style violations, naming inconsistencies, minor improvements
