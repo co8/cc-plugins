@@ -1,10 +1,45 @@
 # AI Flow Patterns
 
-AI development patterns using OpenAI SDK v6 with Zod validation.
+AI development patterns using OpenAI SDK v6 and Anthropic SDK with Zod validation.
+
+**Auto-review**: After implementing AI flows, dispatch `pr-review-toolkit:silent-failure-hunter` — AI error handling is where silent failures hide most often.
 
 ---
 
-## Pure TypeScript Flow Structure
+## Claude / Anthropic SDK Pattern
+
+For Claude API integration, use the `claude-api` skill which provides comprehensive patterns. Quick reference:
+
+```typescript
+import Anthropic from '@anthropic-ai/sdk';
+import { z } from 'zod';
+
+const client = new Anthropic();
+
+const OutputSchema = z.object({
+  insights: z.array(z.string()),
+  sentiment: z.enum(['positive', 'neutral', 'negative']),
+});
+
+type Output = z.infer<typeof OutputSchema>;
+
+async function analyzeWithClaude(input: string): Promise<Output> {
+  const response = await client.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 1024,
+    messages: [{ role: 'user', content: input }],
+  });
+
+  const text = response.content[0].type === 'text' ? response.content[0].text : '';
+  return OutputSchema.parse(JSON.parse(text));
+}
+```
+
+For full Claude API patterns (tool use, streaming, agents), invoke the `claude-api` skill.
+
+---
+
+## Pure TypeScript Flow Structure (OpenAI)
 
 All AI flows use pure TypeScript + OpenAI SDK v6:
 

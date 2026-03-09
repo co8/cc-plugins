@@ -2,9 +2,60 @@
 
 Reference guide for testing standards, configuration, and best practices.
 
+**Prefer Vitest** for new projects (fast, ESM-native, Jest-compatible API). Use Jest for existing projects.
+
+**Auto-review**: After writing tests, dispatch `pr-review-toolkit:pr-test-analyzer` to check coverage quality and gaps.
+
 ---
 
-## Jest Configuration
+## Vitest Configuration (Recommended for New Projects)
+
+### Basic Setup
+
+```typescript
+// vitest.config.ts
+import { defineConfig } from 'vitest/config';
+import path from 'path';
+
+export default defineConfig({
+  test: {
+    environment: 'node',
+    include: ['src/**/*.{test,spec}.{ts,tsx}', 'tests/**/*.{test,spec}.{ts,tsx}'],
+    globals: true,
+    setupFiles: ['./vitest.setup.ts'],
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.d.ts', 'src/**/index.ts'],
+      thresholds: {
+        branches: 90,
+        functions: 90,
+        lines: 90,
+        statements: 90,
+      },
+    },
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+});
+```
+
+### Vitest vs Jest Equivalents
+
+| Jest | Vitest | Notes |
+|------|--------|-------|
+| `jest.fn()` | `vi.fn()` | Same API |
+| `jest.mock()` | `vi.mock()` | Hoisted by default |
+| `jest.spyOn()` | `vi.spyOn()` | Same API |
+| `jest.setTimeout()` | `vi.setConfig({ testTimeout })` | Per-file |
+| `jest.clearAllMocks()` | `vi.clearAllMocks()` | Same API |
+
+---
+
+## Jest Configuration (Existing Projects)
 
 ### Basic Setup
 
