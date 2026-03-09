@@ -402,9 +402,10 @@ Phase 4: DevOps (Sequential)
 ## Agent Definition Template
 
 ```markdown
-### Agent X.Y: <n>
+### Agent X.Y: <Name>
 
 **Role**: [Single sentence describing responsibility]
+**Subagent Type**: [From references/agent-dispatch.md — e.g., `general-purpose`, `feature-dev:code-reviewer`]
 
 **Files**:
 - `path/to/file1.ts`
@@ -421,6 +422,7 @@ Phase 4: DevOps (Sequential)
 ```
 
 **Depends on**: [Agent X.Z] (or "None")
+**Isolation**: [Optional: `worktree` if parallel agents share directories]
 
 **Notes**: [Optional additional context]
 ```
