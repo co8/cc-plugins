@@ -38,7 +38,7 @@
     {
       "name": "secret-sauce",
       "source": "./skills/secret-sauce",
-      "description": "Best practices, rules, and templates extracted from real production projects. Now with automated quality gates using specialized subagents.",
+      "description": "Production-tested coding standards, patterns, and automated quality gates for TypeScript, Next.js, React, and Supabase. 14 reference guides, 5 framework rules, 6 project templates, and a parallel review team of specialized subagents that catch bugs, security issues, and design flaws before they ship.",
       "version": "2.0.0",
       "author": {
         "name": "Enrique R Grullon",
@@ -47,13 +47,21 @@
       "license": "MIT",
       "keywords": [
         "best-practices",
-        "rules",
-        "templates",
+        "coding-standards",
         "typescript",
         "nextjs",
         "react",
         "supabase",
-        "workflow"
+        "ai-flows",
+        "testing",
+        "vitest",
+        "security",
+        "code-review",
+        "quality-gates",
+        "subagents",
+        "tailwind",
+        "templates",
+        "claude-code"
       ],
       "repository": "https://github.com/co8/cc-plugins",
       "homepage": "https://github.com/co8/cc-plugins/tree/main/skills/secret-sauce"
@@ -61,7 +69,7 @@
     {
       "name": "swarm-protocol",
       "source": "./skills/swarm-protocol",
-      "description": "Multi-agent development orchestration - specialized subagents, parallel review team, progressive status tracking, worktree isolation",
+      "description": "Turn complex projects into parallel agent swarms. Orchestrates specialized subagents across planning, implementation, and review phases with worktree isolation, progressive status tracking, and a 5-agent parallel review team. One command to go from idea to merged PR.",
       "version": "2.0.0",
       "author": {
         "name": "Enrique R Grullon",
@@ -73,9 +81,17 @@
         "multi-agent",
         "orchestration",
         "parallel",
-        "workflow",
+        "worktree",
+        "code-review",
+        "subagents",
+        "project-management",
         "automation",
-        "project-management"
+        "workflow",
+        "planning",
+        "architecture",
+        "claude-code",
+        "devops",
+        "ci-cd"
       ],
       "repository": "https://github.com/co8/cc-plugins",
       "homepage": "https://github.com/co8/cc-plugins/tree/main/skills/swarm-protocol"

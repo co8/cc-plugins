@@ -5,7 +5,21 @@ description: "Multi-agent development orchestration for complex projects. Use th
 
 # Swarm Protocol v2
 
-Multi-agent orchestration framework for complex software development projects. Coordinates parallel workstreams using **specialized agent types**, manages project documentation, and automates milestone commits.
+Turn complex projects into parallel agent swarms. One command to go from idea to merged PR.
+
+Orchestrates **specialized subagents** across planning, implementation, and review phases with **worktree isolation** for conflict-free parallelization, **progressive status tracking** for real-time monitoring, and a **5-agent parallel review team** that catches bugs, silent failures, type design issues, stale comments, and unnecessary complexity — all before you merge.
+
+### Why Swarm Protocol?
+
+- **One command** — `/swarm-protocol <name>` creates docs, branches, worktree, and starts planning
+- **Specialized agents** — Each role maps to the right subagent type (architect, explorer, reviewer, etc.)
+- **Maximum parallelism** — Agents run concurrently with worktree isolation to prevent file conflicts
+- **5-agent review team** — Code reviewer, silent failure hunter, type analyzer, comment checker, code simplifier — all in parallel
+- **Real-time monitoring** — `swarm-status.json` with progressive auto-updates for ScopeTUI integration
+- **Smart resumption** — Pick up where you left off with `--resume`, retry single agents with `--agent=N.M`
+- **Plan conversion** — Already have a plan? Convert it directly with `--from-plan=<name>`
+
+---
 
 ## Commands
 

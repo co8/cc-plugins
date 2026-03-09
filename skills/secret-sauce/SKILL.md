@@ -5,7 +5,19 @@ description: Development best practices and project patterns. Use when starting 
 
 # Secret Sauce v2
 
-Best practices, rules, and templates extracted from real production projects. Now with **automated quality gates** using specialized subagents.
+Production-tested coding standards, patterns, and automated quality gates for TypeScript, Next.js, React, and Supabase projects.
+
+**14 reference guides** covering every layer of the stack, **5 framework-specific rule sets** that enforce best practices, **6 ready-to-use project templates**, and a **parallel review team** of specialized subagents that catch bugs, security issues, silent failures, and design flaws before they ship.
+
+### Why Secret Sauce?
+
+- **Instant project setup** — CLAUDE.md template, settings, and planning docs get you productive in seconds
+- **Automated quality gates** — 3-agent quick review or 5-agent full review, all dispatched in parallel
+- **Real patterns, not theory** — Every rule and reference extracted from production codebases
+- **AI flow patterns** — OpenAI SDK v6 + Anthropic SDK with Zod validation, streaming, tool use
+- **Full-stack coverage** — TypeScript, Next.js, React, Supabase, Tailwind v4, Vitest, security, deployment
+
+---
 
 ## Quick Reference
 
