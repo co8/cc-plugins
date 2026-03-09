@@ -38,8 +38,8 @@
     {
       "name": "secret-sauce",
       "source": "./skills/secret-sauce",
-      "description": "Best practices, rules, and templates extracted from real production projects",
-      "version": "1.2.0",
+      "description": "Best practices, rules, and templates extracted from real production projects. Now with automated quality gates using specialized subagents.",
+      "version": "2.0.0",
       "author": {
         "name": "Enrique R Grullon",
         "email": "e@co8.com"
@@ -61,8 +61,8 @@
     {
       "name": "swarm-protocol",
       "source": "./skills/swarm-protocol",
-      "description": "Multi-agent development orchestration - coordinate parallel workstreams, manage project documentation, and automate milestone commits",
-      "version": "1.3.1",
+      "description": "Multi-agent development orchestration - specialized subagents, parallel review team, progressive status tracking, worktree isolation",
+      "version": "2.0.0",
       "author": {
         "name": "Enrique R Grullon",
         "email": "e@co8.com"
