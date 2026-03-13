@@ -228,8 +228,8 @@ Includes all fields for rich TUI display:
 
 | Level | Valid Values | Notes |
 |-------|-------------|-------|
-| **Phase** | `pending`, `running`, `in_progress`, `completed`, `failed`, `blocked` | `running` and `in_progress` are equivalent |
-| **Agent** | `pending`, `running`, `completed`, `failed`, `skipped`, `blocked` | Use `running` (not `in_progress`) |
+| **Phase** | `pending`, `running`, `completed`, `failed`, `blocked` | Always use `running` (never `in_progress` or `in-progress`) |
+| **Agent** | `pending`, `running`, `completed`, `failed`, `skipped`, `blocked` | Always use `running` (never `in_progress` or `in-progress`) |
 
 ---
 
